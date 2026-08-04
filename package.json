@@ -1,0 +1,25 @@
+{
+  "name": "cumin-db",
+  "version": "1.0.0",
+  "description": "CuminDB: Cuminum cyminum Genome Browser and Annotation Portal",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "bioinformatics",
+    "cumin",
+    "cuminum-cyminum",
+    "genome-browser",
+    "database",
+    "cdfd"
+  ],
+  "author": "BRIC-CDFD",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "sqlite3": "^5.1.7"
+  }
+}

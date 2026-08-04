@@ -1,0 +1,26 @@
+# CuminDB System Exclusions
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+
+# Large Data & Parsing Intermediate Files (Regenerated via scripts)
+db/*.json
+db/cumin_database.sqlite
+db/cumin_cds.*
+db/cumin_proteins.*
+db/cumin_ssrs.gff
+db/cumin_ssrs.gff.gz
+db/cumin_ssrs.gff.gz.tbi
+
+# Large Raw Sequence Files
+*.fasta
+*.fai
+*.annot
+*.txt
+*.list.txt
+*.gff
+
+# Standalone JBrowse 2 Build Config (Regenerated via scripts)
+jbrowse2/config.json
