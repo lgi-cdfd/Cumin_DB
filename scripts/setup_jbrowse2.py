@@ -1,11 +1,58 @@
 #!/usr/bin/env python3
 """
 setup_jbrowse2.py
-Prepares GFF3 and FASTA index files and generates a production-ready JBrowse 2 config.json.
+Prepares GFF3 and FASTA index files, sorts/bgzips/tabix-indexes GFF3 models,
+and generates a production-ready JBrowse 2 config.json.
 """
 
 import os
 import json
+import subprocess
+
+def prepare_gff_tracks(base_dir):
+    gff_in = os.path.join(base_dir, 'cumin_gff_export.gff')
+    gff_sorted = os.path.join(base_dir, 'db', 'cumin_sorted.gff')
+    gff_gz = os.path.join(base_dir, 'db', 'cumin_sorted.gff.gz')
+    
+    if not os.path.exists(gff_in):
+        print(f"[-] Reference GFF3 not found at: {gff_in}")
+        return
+
+    print("[*] Sorting GFF3 gene models...")
+    with open(gff_in, 'r', encoding='utf-8', errors='ignore') as infile:
+        lines = infile.readlines()
+
+    headers = [l for l in lines if l.startswith('#')]
+    features = [l for l in lines if not l.startswith('#')]
+
+    def get_feat_sort_key(line_str):
+        parts = line_str.strip().split('\t')
+        if len(parts) >= 4:
+            try:
+                return (parts[0], int(parts[3]))
+            except ValueError:
+                return (parts[0], 0)
+        return ("", 0)
+
+    features.sort(key=get_feat_sort_key)
+
+    os.makedirs(os.path.dirname(gff_sorted), exist_ok=True)
+    with open(gff_sorted, 'w', encoding='utf-8') as outfile:
+        outfile.writelines(headers)
+        outfile.writelines(features)
+        
+    print(f"[+] Saved sorted GFF3 to: {gff_sorted}")
+
+    # Compress with bgzip
+    print("[*] Compressing GFF3 with bgzip...")
+    if os.path.exists(gff_gz):
+        os.remove(gff_gz)
+    subprocess.run(['bgzip', gff_sorted])
+
+    # Index with tabix
+    print("[*] Indexing GFF3 with tabix...")
+    subprocess.run(['tabix', '-p', 'gff', gff_gz])
+    print("[✓] GFF3 track prepared successfully!")
 
 def generate_jbrowse_config(base_dir):
     config = {
@@ -105,4 +152,5 @@ def generate_jbrowse_config(base_dir):
 
 if __name__ == '__main__':
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    prepare_gff_tracks(base_dir)
     generate_jbrowse_config(base_dir)
