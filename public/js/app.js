@@ -128,13 +128,10 @@ function loadSsrs(page = 1) {
                         ? `<a href="#" onclick="searchGeneById('${ssr.gene_id}'); return false;" class="mono-text" style="color:var(--accent-indigo); font-weight:700;">${ssr.gene_id}</a>`
                         : `<span style="color:var(--text-secondary); font-size:0.8rem;">Intergenic</span>`;
                     
-                    const locBadgeClass = ssr.ssr_location === 'Genic' ? 'badge-emerald' : 'badge-indigo';
-                    
                     tr.innerHTML = `
                         <td class="mono-text" title="Original Raw ID: ${ssr.original_id || ''}"><strong>${ssr.ssr_id}</strong></td>
                         <td class="mono-text" style="font-size:0.8rem;">${ssr.contig}:${ssr.start}-${ssr.end}</td>
                         <td>${geneHtml}</td>
-                        <td><span class="badge ${locBadgeClass}">${ssr.ssr_location || 'Genomic'}</span></td>
                         <td><span class="badge badge-amber">${ssr.ssr_type}</span></td>
                         <td class="mono-text"><strong>${ssr.motif}</strong> (${ssr.repeat_count}x)</td>
                         <td class="mono-text" style="font-size:0.8rem;">
