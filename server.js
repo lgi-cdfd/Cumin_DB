@@ -354,41 +354,61 @@ app.get('/api/genome-browser/fai', (req, res) => {
 
 // Track 1: Gene Models & Functional Annotations
 app.get('/api/genome-browser/gff', (req, res) => {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Encoding', 'identity');
     res.sendFile(path.join(__dirname, 'db', 'cumin_genes.gff.gz'));
 });
 app.get('/api/genome-browser/gff-index', (req, res) => {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Encoding', 'identity');
     res.sendFile(path.join(__dirname, 'db', 'cumin_genes.gff.gz.tbi'));
 });
 
 // Track 2: EDTA Repeatmasking Results
 app.get('/api/genome-browser/repeats-gff', (req, res) => {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Encoding', 'identity');
     res.sendFile(path.join(__dirname, 'db', 'cumin_repeats.gff.gz'));
 });
 app.get('/api/genome-browser/repeats-gff-index', (req, res) => {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Encoding', 'identity');
     res.sendFile(path.join(__dirname, 'db', 'cumin_repeats.gff.gz.tbi'));
 });
 
 // Track 3: Mined SSR Markers & PCR Primers
 app.get('/api/genome-browser/ssrs-gff', (req, res) => {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Encoding', 'identity');
     res.sendFile(path.join(__dirname, 'db', 'cumin_ssrs.gff.gz'));
 });
 app.get('/api/genome-browser/ssrs-gff-index', (req, res) => {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Encoding', 'identity');
     res.sendFile(path.join(__dirname, 'db', 'cumin_ssrs.gff.gz.tbi'));
 });
 
 // Track 4: miRNA Target Interactions (Genomically Intersected)
 app.get('/api/genome-browser/mirna-gff', (req, res) => {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Encoding', 'identity');
     res.sendFile(path.join(__dirname, 'db', 'cumin_mirna.gff.gz'));
 });
 app.get('/api/genome-browser/mirna-gff-index', (req, res) => {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Encoding', 'identity');
     res.sendFile(path.join(__dirname, 'db', 'cumin_mirna.gff.gz.tbi'));
 });
 
 // Track 5: Secondary Metabolite Biosynthetic Pathways
 app.get('/api/genome-browser/sec-metabolites-gff', (req, res) => {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Encoding', 'identity');
     res.sendFile(path.join(__dirname, 'db', 'cumin_sec_metabolites.gff.gz'));
 });
 app.get('/api/genome-browser/sec-metabolites-gff-index', (req, res) => {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Encoding', 'identity');
     res.sendFile(path.join(__dirname, 'db', 'cumin_sec_metabolites.gff.gz.tbi'));
 });
 
