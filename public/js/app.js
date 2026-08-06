@@ -8,6 +8,7 @@ let currentMirnaPage = 1;
 document.addEventListener('DOMContentLoaded', () => {
     fetchStats();
     loadGenes(1);
+    loadSecMetabolites(1);
     loadSsrs(1);
     loadTfs(1);
     loadMirna(1);
@@ -218,6 +219,81 @@ function handleGeneSearch(e) {
 }
 function prevGenePage() { if (currentGenePage > 1) loadGenes(currentGenePage - 1); }
 function nextGenePage() { loadGenes(currentGenePage + 1); }
+
+// ----------------------------------------------------
+// SECONDARY METABOLITES DATA TABLE
+// ----------------------------------------------------
+let currentSecPage = 1;
+let currentSecCache = [];
+
+function formatKeggBadges(keggStr) {
+    if (!keggStr || keggStr === '-') return '<span style="color:#94a3b8;">-</span>';
+    const maps = keggStr.split(/[;,]/).map(s => s.trim()).filter(Boolean);
+    return maps.map(m => {
+        const cleanMap = m.replace(/^(ko|map)/i, 'map');
+        return `<a href="https://www.genome.jp/dbget-bin/www_bget?pathway:${cleanMap}" target="_blank" class="badge badge-amber" style="text-decoration:none; display:inline-block; margin:2px;" title="KEGG Pathway ${m}">${m}</a>`;
+    }).join(' ');
+}
+
+function loadSecMetabolites(page = 1) {
+    currentSecPage = page;
+    const limit = document.getElementById('sec-limit-select').value;
+    const search = document.getElementById('sec-search-input').value;
+    const category = document.getElementById('sec-cat-select').value;
+    
+    const tbody = document.getElementById('sec-table-body');
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">Loading secondary metabolites...</td></tr>';
+    
+    fetch(`/api/sec-metabolites?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}&category=${encodeURIComponent(category)}`)
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === 'success') {
+                tbody.innerHTML = '';
+                currentSecCache = res.data;
+
+                // Populate Category Select dropdown if empty
+                const catSelect = document.getElementById('sec-cat-select');
+                if (catSelect && catSelect.children.length <= 1 && res.categories) {
+                    res.categories.forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c.metabolite_category;
+                        opt.textContent = `${c.metabolite_category} (${c.count})`;
+                        catSelect.appendChild(opt);
+                    });
+                }
+
+                if (res.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">No matching secondary metabolite pathways found.</td></tr>';
+                    return;
+                }
+                
+                res.data.forEach(sec => {
+                    const tr = document.createElement('tr');
+                    const goBadges = formatGoBadges(sec.gos, sec.gos);
+                    const keggBadges = formatKeggBadges(sec.kegg_pathway);
+
+                    tr.innerHTML = `
+                        <td class="mono-text"><a href="#" onclick="searchGeneById('${sec.gene_id}'); return false;" style="color:var(--accent-indigo); font-weight:700;">${sec.gene_id}</a></td>
+                        <td class="mono-text" style="font-size:0.82rem;">${sec.contig}:${sec.start.toLocaleString()}-${sec.end.toLocaleString()} (${sec.strand})</td>
+                        <td><span class="badge badge-indigo">${sec.metabolite_category}</span></td>
+                        <td style="font-size:0.85rem; line-height:1.4; max-width:300px; white-space:normal; word-break:break-word;">${sec.description || 'Secondary metabolite gene'}</td>
+                        <td>${goBadges}</td>
+                        <td>${keggBadges}</td>
+                        <td><button class="btn btn-primary" style="padding:4px 12px; font-size:0.78rem;" onclick="searchGeneById('${sec.gene_id}')">View Gene</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                document.getElementById('sec-pagination-info').textContent = `Page ${res.page} of ${res.total_pages} (${res.total.toLocaleString()} total pathways)`;
+                document.getElementById('sec-prev-btn').disabled = res.page <= 1;
+                document.getElementById('sec-next-btn').disabled = res.page >= res.total_pages;
+            }
+        });
+}
+
+function handleSecSearch(e) { if (e.key === 'Enter') loadSecMetabolites(1); }
+function prevSecPage() { if (currentSecPage > 1) loadSecMetabolites(currentSecPage - 1); }
+function nextSecPage() { loadSecMetabolites(currentSecPage + 1); }
 
 // ----------------------------------------------------
 // 3. SSR MARKERS DATA TABLE & PRIMERS

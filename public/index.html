@@ -33,18 +33,35 @@
         </div>
     </header>
 
-    <!-- Sticky Main Navigation Bar (Clean Traditional Academic Theme) -->
+    <!-- Sticky Main Navigation Bar (Clean Traditional Academic Theme with Hover Dropdowns) -->
     <nav class="main-navbar">
         <div class="navbar-container">
             <button class="tab-btn active" onclick="switchTab('home')">Home</button>
-            <button class="tab-btn" onclick="switchTab('genes')">Gene Models</button>
-            <button class="tab-btn" onclick="switchTab('browser')">JBrowse 2</button>
-            <button class="tab-btn" onclick="switchTab('ssrs')">SSR Primers</button>
+            <button class="tab-btn" onclick="switchTab('ssrs')">SSR</button>
             <button class="tab-btn" onclick="switchTab('tfs')">TFs</button>
-            <button class="tab-btn" onclick="switchTab('mirna')">miRNAs</button>
-            <button class="tab-btn" onclick="switchTab('blast')">SequenceServer</button>
+            <button class="tab-btn" onclick="switchTab('mirna')">miRNA</button>
+
+            <!-- Annotation Dropdown -->
+            <div class="nav-item-dropdown">
+                <button class="tab-btn" onclick="switchTab('genes')">Annotation &#9662;</button>
+                <div class="nav-dropdown-content">
+                    <a href="#" class="nav-dropdown-link" onclick="switchTab('genes'); return false;">Functional Annotation</a>
+                    <a href="#" class="nav-dropdown-link" onclick="switchTab('sec-metabolites'); return false;">Secondary Metabolism</a>
+                </div>
+            </div>
+
+            <!-- Tools Dropdown -->
+            <div class="nav-item-dropdown">
+                <button class="tab-btn" onclick="switchTab('blast')">Tools &#9662;</button>
+                <div class="nav-dropdown-content">
+                    <a href="#" class="nav-dropdown-link" onclick="switchTab('blast'); return false;">BLAST</a>
+                    <a href="#" class="nav-dropdown-link" onclick="switchTab('browser'); return false;">JBrowse</a>
+                </div>
+            </div>
+
             <button class="tab-btn" onclick="switchTab('download')">Downloads</button>
-            <button class="tab-btn" onclick="switchTab('team')">Team & Contact</button>
+            <button class="tab-btn" onclick="switchTab('tutorial')">Tutorial</button>
+            <button class="tab-btn" onclick="switchTab('team')">Contact</button>
         </div>
     </nav>
 
@@ -400,6 +417,65 @@
             </div>
         </section>
 
+        <!-- TAB 5B: SECONDARY METABOLISM PATHWAYS -->
+        <section id="tab-sec-metabolites" class="tab-content" style="display:none;">
+            <div class="content-card">
+                <div class="card-title">
+                    <span>Secondary Metabolite Biosynthetic Pathways & Pathway Annotations</span>
+                    <button class="btn btn-success" onclick="exportData('sec-metabolites')">Export CSV</button>
+                </div>
+
+                <div class="controls-bar">
+                    <div class="search-group">
+                        <input type="text" id="sec-search-input" class="input-field" placeholder="Search by Gene ID, Locus, Category, GO or KEGG..." onkeyup="handleSecSearch(event)">
+                        <button class="btn btn-primary" onclick="loadSecMetabolites(1)">Search</button>
+                    </div>
+
+                    <div style="display: flex; gap: 14px; align-items: center;">
+                        <label for="sec-cat-select" style="font-size: 0.88rem; color: var(--text-secondary);">Pathway Category:</label>
+                        <select id="sec-cat-select" class="input-field" style="width: 190px;" onchange="loadSecMetabolites(1)">
+                            <option value="">All Categories</option>
+                        </select>
+
+                        <label for="sec-limit-select" style="font-size: 0.88rem; color: var(--text-secondary);">Rows:</label>
+                        <select id="sec-limit-select" class="input-field" style="width: 90px;" onchange="loadSecMetabolites(1)">
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="min-width: 120px;">Gene ID</th>
+                                <th style="min-width: 140px;">Contig Locus</th>
+                                <th style="min-width: 150px;">Pathway Category</th>
+                                <th style="min-width: 280px;">Functional Description</th>
+                                <th style="min-width: 180px;">GO Terms & IDs</th>
+                                <th style="min-width: 180px;">KEGG Pathways</th>
+                                <th style="min-width: 80px;">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sec-table-body">
+                            <tr><td colspan="7" style="text-align:center; padding:30px;">Loading secondary metabolites...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination-bar">
+                    <span id="sec-pagination-info">Showing 0 of 0</span>
+                    <div class="pagination-controls">
+                        <button class="btn" id="sec-prev-btn" onclick="prevSecPage()">Previous</button>
+                        <button class="btn" id="sec-next-btn" onclick="nextSecPage()">Next</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- TAB 7: WEB BLAST ENGINE -->
         <section id="tab-blast" class="tab-content" style="display:none;">
             <div class="content-card">
@@ -519,6 +595,66 @@
                             Official Website: <a href="http://www.cdfd.org.in" target="_blank" class="external-link">www.cdfd.org.in</a>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: TUTORIAL & USER GUIDE -->
+        <section id="tab-tutorial" class="tab-content" style="display:none;">
+            <div class="content-card">
+                <h2 class="card-title">CuminDB User Guide & Portal Tutorial</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 24px; line-height:1.5;">
+                    Welcome to the <strong>CuminDB Portal Tutorial</strong>. Learn how to search, analyze, navigate, and download multi-omics datasets for <em>Cuminum cuminum</em>.
+                </p>
+
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:20px;">
+                    
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:20px;">
+                        <h3 style="margin-top:0; color:#0369a1; font-size:1.05rem;">1. Searching Genes & Annotations</h3>
+                        <p style="font-size:0.88rem; color:#475569; line-height:1.5;">
+                            Navigate to <strong>Annotation &rarr; Functional Annotation</strong>. Query by standardized Gene ID (<code>CcGene_00001</code>), scaffold (<code>CcContig_000001</code>), GO ID (<code>GO:0009409</code>), EC code (<code>EC 2.7.11.1</code>), or InterPro signature.
+                        </p>
+                        <ul style="font-size:0.85rem; color:#334155; padding-left:18px;">
+                            <li>Click any <strong>GO ID</strong> badge to open AmiGO 2 details.</li>
+                            <li>Click any <strong>EC Code</strong> badge to open ExPASy ENZYME details.</li>
+                            <li>Click <strong>View</strong> to open the full Gene Annotation Details modal.</li>
+                        </ul>
+                    </div>
+
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:20px;">
+                        <h3 style="margin-top:0; color:#b45309; font-size:1.05rem;">2. Secondary Metabolism Pathways</h3>
+                        <p style="font-size:0.88rem; color:#475569; line-height:1.5;">
+                            Navigate to <strong>Annotation &rarr; Secondary Metabolism</strong>. Explore 294 biosynthetic pathways categorized into Terpenoids, Alkaloids, Phenylpropanoids, Polyketides, and Flavonoids.
+                        </p>
+                        <ul style="font-size:0.85rem; color:#334155; padding-left:18px;">
+                            <li>Filter by <strong>Pathway Category</strong> dropdown.</li>
+                            <li>Click hyperlinked <strong>KEGG Map IDs</strong> to view official KEGG metabolic charts.</li>
+                        </ul>
+                    </div>
+
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:20px;">
+                        <h3 style="margin-top:0; color:#047857; font-size:1.05rem;">3. Mining SSR Microsatellites & Primers</h3>
+                        <p style="font-size:0.88rem; color:#475569; line-height:1.5;">
+                            Navigate to <strong>SSR</strong>. Search over 213,248 PCR primer pairs mined across the draft assembly.
+                        </p>
+                        <ul style="font-size:0.85rem; color:#334155; padding-left:18px;">
+                            <li>Filter by repeat type (<code>Mononucleotide</code> to <code>Hexanucleotide</code>, <code>Compound</code>).</li>
+                            <li>Click <strong>Gene ID</strong> links to jump to intersecting gene loci.</li>
+                            <li>Use <strong>Copy</strong> buttons to copy forward/reverse primer sequences.</li>
+                        </ul>
+                    </div>
+
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:20px;">
+                        <h3 style="margin-top:0; color:#4338ca; font-size:1.05rem;">4. SequenceServer BLAST & JBrowse 2</h3>
+                        <p style="font-size:0.88rem; color:#475569; line-height:1.5;">
+                            Navigate to <strong>Tools &rarr; BLAST</strong> or <strong>Tools &rarr; JBrowse</strong>.
+                        </p>
+                        <ul style="font-size:0.85rem; color:#334155; padding-left:18px;">
+                            <li>Paste FASTA sequences into BLAST to search CDS, Protein, or Contig databases.</li>
+                            <li>Click <strong>View in JBrowse 2</strong> on BLAST hit results to inspect linear genomic tracks.</li>
+                        </ul>
+                    </div>
+
                 </div>
             </div>
         </section>

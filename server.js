@@ -310,6 +310,64 @@ app.get('/api/mirna', async (req, res) => {
 });
 
 // ----------------------------------------------------
+// 5B. SECONDARY METABOLITES ENDPOINT
+// ----------------------------------------------------
+app.get('/api/sec-metabolites', async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const offset = (page - 1) * limit;
+        const category = req.query.category ? req.query.category.trim() : '';
+        const search = req.query.search ? req.query.search.trim() : '';
+        const format = req.query.format || 'json';
+
+        let whereClauses = [];
+        let params = [];
+
+        if (category) {
+            whereClauses.push('metabolite_category = ?');
+            params.push(category);
+        }
+
+        if (search) {
+            whereClauses.push('(gene_id LIKE ? OR contig LIKE ? OR description LIKE ? OR gos LIKE ? OR kegg_pathway LIKE ?)');
+            params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
+        }
+
+        const whereSql = whereClauses.length > 0 ? 'WHERE ' + whereClauses.join(' AND ') : '';
+
+        if (format === 'csv') {
+            const allRows = await dbAll(`SELECT * FROM secondary_metabolites ${whereSql} ORDER BY id ASC LIMIT 5000`, params);
+            res.setHeader('Content-Type', 'text/csv');
+            res.setHeader('Content-Disposition', 'attachment; filename="cumin_secondary_metabolites_export.csv"');
+            if (allRows.length === 0) return res.send('gene_id,contig,start,end,strand,metabolite_category,description,gos,kegg_pathway\n');
+            const headers = Object.keys(allRows[0]).join(',');
+            const csvLines = allRows.map(row => Object.values(row).map(v => `"${String(v || '').replace(/"/g, '""')}"`).join(','));
+            return res.send([headers, ...csvLines].join('\n'));
+        }
+
+        const totalRow = await dbGet(`SELECT COUNT(*) as count FROM secondary_metabolites ${whereSql}`, params);
+        const total = totalRow ? totalRow.count : 0;
+
+        const categories = await dbAll(`SELECT metabolite_category, COUNT(*) as count FROM secondary_metabolites GROUP BY metabolite_category ORDER BY count DESC`);
+
+        const rows = await dbAll(`SELECT * FROM secondary_metabolites ${whereSql} ORDER BY id ASC LIMIT ? OFFSET ?`, [...params, limit, offset]);
+
+        res.json({
+            status: 'success',
+            page,
+            limit,
+            total,
+            total_pages: Math.ceil(total / limit),
+            categories,
+            data: rows
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ----------------------------------------------------
 // 6. GENOME BROWSER TRACK ENDPOINT
 // ----------------------------------------------------
 app.get('/api/genome-browser/contigs', async (req, res) => {

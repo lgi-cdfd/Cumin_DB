@@ -139,6 +139,48 @@ body {
     background: rgba(255, 255, 255, 0.08);
 }
 
+/* Navigation Hover Dropdown Menus */
+.nav-item-dropdown {
+    position: relative;
+    display: inline-block;
+    flex: 1;
+}
+
+.nav-dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #ffffff;
+    min-width: 220px;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    z-index: 2000;
+    padding: 6px 0;
+}
+
+.nav-item-dropdown:hover .nav-dropdown-content {
+    display: block;
+}
+
+.nav-dropdown-link {
+    color: var(--text-primary);
+    padding: 11px 18px;
+    display: block;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: background 0.15s ease;
+    border-left: 3px solid transparent;
+}
+
+.nav-dropdown-link:hover {
+    background: #f1f5f9;
+    color: var(--accent-indigo);
+    border-left-color: var(--accent-indigo);
+}
+
 .main-navbar .tab-btn.active {
     color: #ffffff;
     background: rgba(255, 255, 255, 0.12);
