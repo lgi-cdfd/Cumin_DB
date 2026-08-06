@@ -50,17 +50,28 @@ def main():
             if line.startswith('>'):
                 cid = line[1:].strip().split()[0]
                 contig_old_list.append(cid)
-                
-    contig_old_list = sorted(list(set(contig_old_list)))
-    contig_map = {old: f"CcContig_{idx+1:06d}" for idx, old in enumerate(contig_old_list)}
-    print(f"[+] Loaded {len(contig_old_list):,} contigs from cumin_ncbi.fsa.")
-
-    # Unique Gene IDs from annotations.csv / genes.csv
+    
     annot_csv = os.path.join(base_dir, 'annotations.csv')
     df_annot_raw = pd.read_csv(annot_csv) if os.path.exists(annot_csv) else None
-    
     genes_csv = os.path.join(base_dir, 'genes.csv')
     df_genes_raw = pd.read_csv(genes_csv) if os.path.exists(genes_csv) else None
+
+    # Master scaffolds across FASTA, genes, and SSRs
+    all_scaffolds = set(contig_old_list)
+    if df_genes_raw is not None and 'Scaffold' in df_genes_raw.columns:
+        all_scaffolds.update(df_genes_raw['Scaffold'].dropna().astype(str).tolist())
+    ssr_csv = os.path.join(base_dir, 'ssr_markers.csv')
+    if os.path.exists(ssr_csv):
+        try:
+            df_ssrs_tmp = pd.read_csv(ssr_csv)
+            if 'Scaffold' in df_ssrs_tmp.columns:
+                all_scaffolds.update(df_ssrs_tmp['Scaffold'].dropna().astype(str).tolist())
+        except Exception:
+            pass
+
+    sorted_all_scaffolds = sorted(list(all_scaffolds))
+    contig_map = {old: f"CcContig_{idx+1:06d}" for idx, old in enumerate(sorted_all_scaffolds)}
+    print(f"[+] Loaded {len(sorted_all_scaffolds):,} master scaffolds across assembly, genes, and SSRs.")
 
     gene_old_list = []
     if df_annot_raw is not None:
