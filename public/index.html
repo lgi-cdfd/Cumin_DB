@@ -663,34 +663,96 @@
         <section id="tab-download" class="tab-content" style="display:none;">
             <div class="content-card">
                 <h2 class="card-title">CuminDB Bulk Data Downloads</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 24px;">
-                    Download complete genomic, functional annotation, and marker datasets for <em>Cuminum cyminum</em> for offline research and publication.
+                <p style="color: var(--text-secondary); margin-bottom: 24px; line-height:1.5;">
+                    Download complete draft genome assembly, GFF3 tracks, functional annotations, SSR primers, secondary metabolites, and small RNA target datasets for <em>Cuminum cyminum</em> for offline computational genomics research.
                 </p>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                    <div style="background: #ffffff; padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
-                        <h3 style="font-size: 1.05rem; color: var(--text-primary);">Genome GFF3 Annotations</h3>
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0 16px;">Complete structural gene annotations in GFF3 / CSV format.</p>
-                        <a href="/api/genes?format=csv" class="btn btn-primary" download>Download GFF Annotations (CSV)</a>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    
+                    <div style="background: #ffffff; padding: 22px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); display:flex; flex-direction:column; justify-space-between;">
+                        <div>
+                            <span class="badge badge-indigo" style="margin-bottom:8px;">GENOME ASSEMBLY</span>
+                            <h3 style="font-size: 1.05rem; color: var(--text-primary); margin:4px 0;">Contig Assembly FASTA</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0 16px;">147,524 contigs draft genome assembly FASTA reference file (<code>cumin_ncbi.fsa</code>).</p>
+                        </div>
+                        <a href="/api/download/assembly" class="btn btn-primary" style="width:100%;" download>Download Assembly FASTA</a>
                     </div>
 
-                    <div style="background: #ffffff; padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
-                        <h3 style="font-size: 1.05rem; color: var(--text-primary);">SSR Primers Dataset</h3>
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0 16px;">1,869 PCR primer pairs with Tm and amplicon size profiles.</p>
-                        <a href="/api/ssrs?format=csv" class="btn btn-primary" download>Download SSR Primers (CSV)</a>
+                    <div style="background: #ffffff; padding: 22px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); display:flex; flex-direction:column; justify-space-between;">
+                        <div>
+                            <span class="badge badge-emerald" style="margin-bottom:8px;">GENE MODELS</span>
+                            <h3 style="font-size: 1.05rem; color: var(--text-primary); margin:4px 0;">Gene Models & Functional Annotations</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0 16px;">33,595 gene models with AmiGO 2 GO IDs, ExPASy EC numbers, and InterPro signatures.</p>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <a href="/api/genes?format=csv" class="btn btn-primary" style="flex:1;" download>CSV Export</a>
+                            <a href="/db/cumin_genes.gff.gz" class="btn" style="flex:1;" download>GFF3 Track</a>
+                        </div>
                     </div>
 
-                    <div style="background: #ffffff; padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
-                        <h3 style="font-size: 1.05rem; color: var(--text-primary);">Transcription Factors</h3>
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0 16px;">1,049 TFs with TAIR orthologs & E-value cutoffs.</p>
-                        <a href="/api/tfs?format=csv" class="btn btn-primary" download>Download TF Dataset (CSV)</a>
+                    <div style="background: #ffffff; padding: 22px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); display:flex; flex-direction:column; justify-space-between;">
+                        <div>
+                            <span class="badge badge-amber" style="margin-bottom:8px;">MICROSATELLITES</span>
+                            <h3 style="font-size: 1.05rem; color: var(--text-primary); margin:4px 0;">SSR Markers & PCR Primers</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0 16px;">213,248 SSR markers with primer sequences, Tm values, amplicon sizes, and gene intersections.</p>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <a href="/api/ssrs?format=csv" class="btn btn-primary" style="flex:1;" download>CSV Export</a>
+                            <a href="/db/cumin_ssrs.gff.gz" class="btn" style="flex:1;" download>GFF3 Track</a>
+                        </div>
                     </div>
 
-                    <div style="background: #ffffff; padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
-                        <h3 style="font-size: 1.05rem; color: var(--text-primary);">miRNA Targets</h3>
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0 16px;">psRNATarget & miRBase hyperlinked interaction targets.</p>
-                        <a href="/api/mirna?format=csv" class="btn btn-primary" download>Download miRNA Targets (CSV)</a>
+                    <div style="background: #ffffff; padding: 22px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); display:flex; flex-direction:column; justify-space-between;">
+                        <div>
+                            <span class="badge badge-indigo" style="margin-bottom:8px;">PATHWAYS</span>
+                            <h3 style="font-size: 1.05rem; color: var(--text-primary); margin:4px 0;">Secondary Metabolites Pathways</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0 16px;">294 secondary metabolite pathway genes categorized into Terpenoids, Alkaloids, and Flavonoids.</p>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <a href="/api/sec-metabolites?format=csv" class="btn btn-primary" style="flex:1;" download>CSV Export</a>
+                            <a href="/db/cumin_sec_metabolites.gff.gz" class="btn" style="flex:1;" download>GFF3 Track</a>
+                        </div>
                     </div>
+
+                    <div style="background: #ffffff; padding: 22px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); display:flex; flex-direction:column; justify-space-between;">
+                        <div>
+                            <span class="badge badge-emerald" style="margin-bottom:8px;">REGULATION</span>
+                            <h3 style="font-size: 1.05rem; color: var(--text-primary); margin:4px 0;">Transcription Factor Families</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0 16px;">1,065 transcription factor genes across 44 families with TAIR orthologs.</p>
+                        </div>
+                        <a href="/api/tfs?format=csv" class="btn btn-primary" style="width:100%;" download>CSV Export</a>
+                    </div>
+
+                    <div style="background: #ffffff; padding: 22px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); display:flex; flex-direction:column; justify-space-between;">
+                        <div>
+                            <span class="badge badge-amber" style="margin-bottom:8px;">SMALL RNA</span>
+                            <h3 style="font-size: 1.05rem; color: var(--text-primary); margin:4px 0;">microRNA Targets (miRBase)</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0 16px;">887,328 genomically intersected miRNA target interactions with expectation scores.</p>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <a href="/api/mirna?format=csv" class="btn btn-primary" style="flex:1;" download>CSV Export</a>
+                            <a href="/db/cumin_mirna.gff.gz" class="btn" style="flex:1;" download>GFF3 Track</a>
+                        </div>
+                    </div>
+
+                    <div style="background: #ffffff; padding: 22px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); display:flex; flex-direction:column; justify-space-between;">
+                        <div>
+                            <span class="badge badge-indigo" style="margin-bottom:8px;">REPEATS</span>
+                            <h3 style="font-size: 1.05rem; color: var(--text-primary); margin:4px 0;">EDTA Repeatmasking Annotations</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0 16px;">Transposon and repetitive element annotations across the draft genome assembly.</p>
+                        </div>
+                        <a href="/db/cumin_repeats.gff.gz" class="btn btn-primary" style="width:100%;" download>Download GFF3 Track</a>
+                    </div>
+
+                    <div style="background: #ffffff; padding: 22px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); display:flex; flex-direction:column; justify-space-between;">
+                        <div>
+                            <span class="badge badge-emerald" style="margin-bottom:8px;">NON-CODING RNA</span>
+                            <h3 style="font-size: 1.05rem; color: var(--text-primary); margin:4px 0;">Long Non-Coding RNA (lncRNA)</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0 16px;">Inferred lncRNA transcript dataset with target gene interaction predictions.</p>
+                        </div>
+                        <a href="/api/download/lncrna" class="btn btn-primary" style="width:100%;" download>CSV Export</a>
+                    </div>
+
                 </div>
             </div>
         </section>

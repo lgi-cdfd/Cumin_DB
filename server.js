@@ -370,6 +370,17 @@ app.get('/api/sec-metabolites', async (req, res) => {
 // ----------------------------------------------------
 // 6. GENOME BROWSER TRACK ENDPOINT
 // ----------------------------------------------------
+app.get('/api/download/assembly', (req, res) => {
+    const file = path.join(__dirname, 'cumin_ncbi.fsa');
+    if (fs.existsSync(file)) return res.download(file, 'Cuminum_cyminum_genome_assembly.fsa');
+    res.status(404).send('Assembly file not found');
+});
+
+app.get('/api/download/lncrna', (req, res) => {
+    const file = path.join(__dirname, 'lncrna.csv');
+    if (fs.existsSync(file)) return res.download(file, 'cumin_lncrna_annotations.csv');
+    res.status(404).send('LncRNA file not found');
+});
 app.get('/api/genome-browser/contigs', async (req, res) => {
     try {
         const contigs = await dbAll('SELECT DISTINCT contig FROM genes ORDER BY contig LIMIT 100');
