@@ -365,6 +365,18 @@ body {
     text-align: left;
 }
 
+.fit-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.fit-table th, .fit-table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 10px 10px;
+}
+
 .data-table th {
     background: #f9fafb;
     color: var(--text-secondary);

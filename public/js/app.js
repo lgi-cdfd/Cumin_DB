@@ -61,27 +61,33 @@ function formatGoBadges(goIdsStr, goTermsStr) {
     if (!goIdsStr) return '<span style="color:#94a3b8;">-</span>';
     const ids = goIdsStr.split(/[;,]/).map(s => s.trim()).filter(Boolean);
     const terms = goTermsStr ? goTermsStr.split(/[;,]/).map(s => s.trim()) : [];
-    return ids.slice(0, 3).map((id, i) => {
-        const title = terms[i] || id;
-        return `<a href="https://amigo.geneontology.org/amigo/term/${id}" target="_blank" class="badge badge-emerald" style="text-decoration:none; display:inline-block; margin:2px;" title="${title}">${id}</a>`;
-    }).join('') + (ids.length > 3 ? ` <span style="font-size:0.75rem; color:#64748b;">+${ids.length - 3} more</span>` : '');
+    const firstTitle = terms[0] || ids[0];
+    const badge = `<a href="https://amigo.geneontology.org/amigo/term/${ids[0]}" target="_blank" class="badge badge-emerald" style="text-decoration:none; max-width:90px; overflow:hidden; text-overflow:ellipsis; display:inline-block; vertical-align:middle;" title="${firstTitle}">${ids[0]}</a>`;
+    if (ids.length > 1) {
+        return badge + ` <span style="font-size:0.75rem; color:#64748b; font-weight:600;" title="${ids.join(', ')}">+${ids.length - 1}</span>`;
+    }
+    return badge;
 }
 
 function formatEcBadges(ecStr, ecNameStr) {
     if (!ecStr) return '<span style="color:#94a3b8;">-</span>';
     const ecs = ecStr.split(/[;,]/).map(s => s.trim().replace(/^EC:/i, '')).filter(Boolean);
-    return ecs.map(ec => {
-        return `<a href="https://enzyme.expasy.org/EC/${ec}" target="_blank" class="badge badge-amber" style="text-decoration:none; display:inline-block; margin:2px;" title="${ecNameStr || 'Enzyme'}">EC ${ec}</a>`;
-    }).join(' ');
+    const badge = `<a href="https://enzyme.expasy.org/EC/${ecs[0]}" target="_blank" class="badge badge-amber" style="text-decoration:none; display:inline-block; vertical-align:middle;" title="${ecNameStr || 'Enzyme'}">EC ${ecs[0]}</a>`;
+    if (ecs.length > 1) {
+        return badge + ` <span style="font-size:0.75rem; color:#64748b; font-weight:600;" title="${ecs.join(', ')}">+${ecs.length - 1}</span>`;
+    }
+    return badge;
 }
 
 function formatInterProBadges(sigsStr, nameStr) {
     if (!sigsStr) return '<span style="color:#94a3b8;">-</span>';
     const sigs = sigsStr.split(/[;,]/).map(s => s.trim()).filter(Boolean);
-    return sigs.slice(0, 3).map(sig => {
-        const cleanSig = sig.split(' ')[0];
-        return `<a href="https://www.ebi.ac.uk/interpro/search/text/${cleanSig}" target="_blank" class="badge badge-indigo" style="text-decoration:none; display:inline-block; margin:2px;" title="${nameStr || cleanSig}">${cleanSig}</a>`;
-    }).join('') + (sigs.length > 3 ? ` <span style="font-size:0.75rem; color:#64748b;">+${sigs.length - 3} more</span>` : '');
+    const cleanSig = sigs[0].split(' ')[0];
+    const badge = `<a href="https://www.ebi.ac.uk/interpro/search/text/${cleanSig}" target="_blank" class="badge badge-indigo" style="text-decoration:none; max-width:95px; overflow:hidden; text-overflow:ellipsis; display:inline-block; vertical-align:middle;" title="${nameStr || cleanSig}">${cleanSig}</a>`;
+    if (sigs.length > 1) {
+        return badge + ` <span style="font-size:0.75rem; color:#64748b; font-weight:600;" title="${sigs.join(', ')}">+${sigs.length - 1}</span>`;
+    }
+    return badge;
 }
 
 function loadGenes(page = 1) {
@@ -109,17 +115,18 @@ function loadGenes(page = 1) {
                     const goBadges = formatGoBadges(gene.go_ids, gene.go_terms);
                     const ecBadges = formatEcBadges(gene.ec_code, gene.ec_name);
                     const iprBadges = formatInterProBadges(gene.interpro_signatures, gene.interpro_name);
+                    const descText = gene.description || 'Predicted protein';
 
                     tr.innerHTML = `
                         <td class="mono-text"><a href="#" onclick="openGeneModal('${gene.gene_id}'); return false;" style="color:var(--accent-indigo); font-weight:700;">${gene.gene_id}</a></td>
-                        <td class="mono-text" style="font-size:0.8rem;">${gene.contig}</td>
-                        <td style="font-size:0.8rem;">${gene.start.toLocaleString()} - ${gene.end.toLocaleString()} (${gene.length.toLocaleString()} bp)</td>
+                        <td class="mono-text" style="font-size:0.8rem;" title="${gene.contig}">${gene.contig}</td>
+                        <td style="font-size:0.8rem;" title="${gene.start.toLocaleString()} - ${gene.end.toLocaleString()}">${gene.start.toLocaleString()}-${gene.end.toLocaleString()}</td>
                         <td><span class="badge ${gene.strand === '+' ? 'badge-emerald' : 'badge-indigo'}">${gene.strand}</span></td>
-                        <td style="max-width:220px; font-size:0.85rem; line-height:1.3;">${gene.description || '<span style="color:#94a3b8;">Predicted protein</span>'}</td>
+                        <td style="font-size:0.83rem;" title="${descText}">${descText}</td>
                         <td>${goBadges}</td>
                         <td>${ecBadges}</td>
                         <td>${iprBadges}</td>
-                        <td><button class="btn btn-primary" style="padding:4px 10px; font-size:0.78rem;" onclick="openGeneModal('${gene.gene_id}')">View</button></td>
+                        <td><button class="btn btn-primary" style="padding:3px 8px; font-size:0.75rem;" onclick="openGeneModal('${gene.gene_id}')">View</button></td>
                     `;
                     tbody.appendChild(tr);
                 });
