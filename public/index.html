@@ -12,39 +12,59 @@
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@jbrowse/react-linear-genome-view/dist/react-linear-genome-view.umd.production.min.js" crossorigin></script>
     <link rel="stylesheet" href="https://unpkg.com/@jbrowse/react-linear-genome-view/dist/style.css">
+    <!-- FontAwesome 6 Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <!-- Header & Institutional Branding -->
-    <header class="navbar">
-        <div class="nav-container">
-            <div class="brand-section">
-                <img src="cdfd-logo.png" alt="BRIC-CDFD Logo" class="cdfd-logo">
-                <div class="brand-titles">
-                    <h1>CuminDB Portal</h1>
-                    <p><em>Cuminum cyminum</em> Genomic & Functional Annotation Database</p>
-                </div>
+    <!-- Institutional Top Header Banner (Matching CDFD TurmericDB & AmaranthGRD) -->
+    <header class="middle-header">
+        <div class="header-container">
+            <div class="header-logo-left">
+                <img src="cdfd-logo.png" alt="BRIC-CDFD Logo" class="institutional-logo">
             </div>
-            <div class="lab-badge">
-                BRIC - Centre for DNA Fingerprinting and Diagnostics (CDFD)
+            <div class="header-titles">
+                <span class="header-subtitle-tag">CUMIN GENOMIC RESOURCE DATABASE (CuminDB)</span>
+                <h1 class="header-main-title">A Comprehensive Genomic Resource for <em>Cuminum cyminum</em> Varietal Improvement & Functional Genomics</h1>
+            </div>
+            <div class="header-logo-right">
+                <div class="badge-cdfd">BRIC - CDFD</div>
             </div>
         </div>
     </header>
 
-    <!-- Floating Navigation Bar (Screen Fitting Inline Layout) -->
-    <div class="nav-tabs-wrapper">
-        <nav class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('home')">Home</button>
-            <button class="tab-btn" onclick="switchTab('genes')">Genes</button>
-            <button class="tab-btn" onclick="switchTab('browser')">JBrowse 2</button>
-            <button class="tab-btn" onclick="switchTab('ssrs')">SSR & Primers</button>
-            <button class="tab-btn" onclick="switchTab('tfs')">TFs</button>
-            <button class="tab-btn" onclick="switchTab('mirna')">miRNAs</button>
-            <button class="tab-btn" onclick="switchTab('blast')">BLAST</button>
-            <button class="tab-btn" onclick="switchTab('team')">Team & Contact</button>
-            <button class="tab-btn" onclick="switchTab('download')">Downloads</button>
-        </nav>
-    </div>
+    <!-- Sticky Main Navigation Bar (FontAwesome Icons + CDFD Turmeric DB Navy Theme) -->
+    <nav class="main-navbar">
+        <div class="navbar-container">
+            <button class="tab-btn active" onclick="switchTab('home')">
+                <i class="fa-solid fa-house"></i> Home
+            </button>
+            <button class="tab-btn" onclick="switchTab('genes')">
+                <i class="fa-solid fa-dna"></i> Gene Models
+            </button>
+            <button class="tab-btn" onclick="switchTab('browser')">
+                <i class="fa-solid fa-microscope"></i> JBrowse 2
+            </button>
+            <button class="tab-btn" onclick="switchTab('ssrs')">
+                <i class="fa-solid fa-search"></i> SSR Primers
+            </button>
+            <button class="tab-btn" onclick="switchTab('tfs')">
+                <i class="fa-solid fa-sitemap"></i> TFs
+            </button>
+            <button class="tab-btn" onclick="switchTab('mirna')">
+                <i class="fa-solid fa-bullseye"></i> miRNAs
+            </button>
+            <button class="tab-btn" onclick="switchTab('blast')">
+                <i class="fa-solid fa-bolt"></i> Web BLAST
+            </button>
+            <button class="tab-btn" onclick="switchTab('download')">
+                <i class="fa-solid fa-download"></i> Downloads
+            </button>
+            <button class="tab-btn" onclick="switchTab('team')">
+                <i class="fa-solid fa-users"></i> Team & Contact
+            </button>
+        </div>
+    </nav>
 
     <!-- Main Container -->
     <main class="main-container">
