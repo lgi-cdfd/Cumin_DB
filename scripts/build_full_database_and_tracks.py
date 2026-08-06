@@ -280,8 +280,13 @@ def main():
             old_sid = str(r.ID).strip()
             new_sid = f"CcSSR_{idx:06d}"
             old_scaf = str(r.Scaffold).strip()
-            new_scaf = contig_map.get(old_scaf, old_scaf)
-            stype = str(r.SSR_type).strip()
+            type_map = {
+                'p1': 'Mononucleotide', 'p2': 'Dinucleotide', 'p3': 'Trinucleotide',
+                'p4': 'Tetranucleotide', 'p5': 'Pentanucleotide', 'p6': 'Hexanucleotide',
+                'c': 'Compound', 'c*': 'Compound'
+            }
+            raw_stype = str(r.SSR_type).strip()
+            stype = type_map.get(raw_stype, raw_stype)
             motif = str(r.SSR).strip()
             size = int(r.Size)
             s_raw = int(r.Start)
