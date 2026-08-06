@@ -128,28 +128,15 @@ body {
     font-family: inherit;
     cursor: pointer;
     transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    text-align: center;
     border-bottom: 3px solid transparent;
     border-radius: 0;
     flex: 1;
 }
 
-.main-navbar .tab-btn i {
-    font-size: 0.95rem;
-    color: #94a3b8;
-    transition: color 0.2s ease;
-}
-
 .main-navbar .tab-btn:hover {
     color: #ffffff;
     background: rgba(255, 255, 255, 0.08);
-}
-
-.main-navbar .tab-btn:hover i {
-    color: #38bdf8;
 }
 
 .main-navbar .tab-btn.active {
