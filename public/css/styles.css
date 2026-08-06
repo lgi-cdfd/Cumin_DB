@@ -360,21 +360,16 @@ body {
 
 .data-table {
     width: 100%;
+    min-width: 1280px;
     border-collapse: collapse;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     text-align: left;
 }
 
-.fit-table {
-    table-layout: fixed;
-    width: 100%;
-}
-
-.fit-table th, .fit-table td {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 10px 10px;
+.data-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
 }
 
 .data-table th {
