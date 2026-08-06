@@ -10,6 +10,9 @@ const PORT = process.env.PORT || 8005;
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/db', express.static(path.join(__dirname, 'db')));
+app.get('/cumin_ncbi_renamed.fsa', (req, res) => res.sendFile(path.join(__dirname, 'cumin_ncbi_renamed.fsa')));
+app.get('/cumin_ncbi_renamed.fsa.fai', (req, res) => res.sendFile(path.join(__dirname, 'cumin_ncbi_renamed.fsa.fai')));
 
 // SQLite Database Connection
 const dbPath = path.join(__dirname, 'db', 'cumin_database.sqlite');
@@ -60,6 +63,9 @@ app.get('/api/stats', async (req, res) => {
         // miRNA inhibition distribution
         const mirnaDist = await dbAll('SELECT inhibition, COUNT(*) as count FROM mirna_targets GROUP BY inhibition');
 
+        // Secondary Metabolite Category distribution
+        const secMetabDist = await dbAll('SELECT metabolite_category, COUNT(*) as count FROM secondary_metabolites GROUP BY metabolite_category ORDER BY count DESC');
+
         res.json({
             status: 'success',
             stats: {
@@ -71,7 +77,8 @@ app.get('/api/stats', async (req, res) => {
             },
             tf_distribution: tfDist,
             ssr_distribution: ssrDist,
-            mirna_distribution: mirnaDist
+            mirna_distribution: mirnaDist,
+            sec_metab_distribution: secMetabDist
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -148,12 +155,24 @@ app.get('/api/ssrs', async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
         const offset = (page - 1) * limit;
+        const motif = req.query.motif ? req.query.motif.trim() : '';
+        const geneId = req.query.gene_id ? req.query.gene_id.trim() : '';
         const search = req.query.search ? req.query.search.trim() : '';
         const ssrType = req.query.type ? req.query.type.trim() : '';
         const format = req.query.format || 'json';
 
         let whereClauses = [];
         let params = [];
+
+        if (motif) {
+            whereClauses.push('motif LIKE ?');
+            params.push(`%${motif}%`);
+        }
+
+        if (geneId) {
+            whereClauses.push('gene_id LIKE ?');
+            params.push(`%${geneId}%`);
+        }
 
         if (search) {
             whereClauses.push('(ssr_id LIKE ? OR original_id LIKE ? OR gene_id LIKE ? OR contig LIKE ? OR motif LIKE ?)');

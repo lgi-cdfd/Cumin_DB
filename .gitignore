@@ -1,26 +1,48 @@
-# CuminDB System Exclusions
+# CuminDB System & Server Exclusions
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+server.log
+*.log
 .DS_Store
 
-# Large Data & Parsing Intermediate Files (Regenerated via scripts)
-db/*.json
-db/cumin_database.sqlite
+# SQLite Master Database & Multi-track Indexes (Regenerated via scripts)
+db/
+db/*.sqlite
+db/*.sqlite-journal
+db/*.gff.gz
+db/*.gff.gz.tbi
+db/*.fsa
+db/*.fsa.fai
 db/cumin_cds.*
 db/cumin_proteins.*
-db/cumin_ssrs.gff
-db/cumin_ssrs.gff.gz
-db/cumin_ssrs.gff.gz.tbi
 
-# Large Raw Sequence Files
-*.fasta
+# Large Raw Genomic Data & Intermediate Dumps
+*.fsa
 *.fai
-*.annot
-*.txt
-*.list.txt
+*.fxi
+*.fa
+*.fasta
 *.gff
+*.gff3
+*.annot
+*.xlsx
+*.zip
+*.txt
+krait-ssr
+krait-ssr-primers
+cumin_eggnog.emapper.annotations
+cumin_combined_functional_annotation.tsv
+cumin_secondary_metabolites.tsv
+*.csv
 
-# Standalone JBrowse 2 Build Config (Regenerated via scripts)
+# Root Temporary Photo Files (Moved to public/images/team/)
+Ajay.png
+Ankit.jpeg
+LakshmiDevi.jpeg
+Priyanka.jpeg
+Ramesh.jpeg
+
+# JBrowse Config Build Output
 jbrowse2/config.json

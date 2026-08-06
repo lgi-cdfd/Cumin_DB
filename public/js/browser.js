@@ -59,8 +59,8 @@ function initializeJBrowse2() {
                 assemblyNames: ['Cuminum_cyminum'],
                 adapter: {
                     type: 'Gff3TabixAdapter',
-                    gffGzLocation: { uri: '/api/genome-browser/gff', locationType: 'UriLocation' },
-                    index: { location: { uri: '/api/genome-browser/gff-index', locationType: 'UriLocation' } }
+                    gffGzLocation: { uri: '/db/cumin_genes.gff.gz', locationType: 'UriLocation' },
+                    index: { location: { uri: '/db/cumin_genes.gff.gz.tbi', locationType: 'UriLocation' } }
                 }
             },
             {
@@ -70,8 +70,8 @@ function initializeJBrowse2() {
                 assemblyNames: ['Cuminum_cyminum'],
                 adapter: {
                     type: 'Gff3TabixAdapter',
-                    gffGzLocation: { uri: '/api/genome-browser/repeats-gff', locationType: 'UriLocation' },
-                    index: { location: { uri: '/api/genome-browser/repeats-gff-index', locationType: 'UriLocation' } }
+                    gffGzLocation: { uri: '/db/cumin_repeats.gff.gz', locationType: 'UriLocation' },
+                    index: { location: { uri: '/db/cumin_repeats.gff.gz.tbi', locationType: 'UriLocation' } }
                 }
             },
             {
@@ -81,8 +81,8 @@ function initializeJBrowse2() {
                 assemblyNames: ['Cuminum_cyminum'],
                 adapter: {
                     type: 'Gff3TabixAdapter',
-                    gffGzLocation: { uri: '/api/genome-browser/ssrs-gff', locationType: 'UriLocation' },
-                    index: { location: { uri: '/api/genome-browser/ssrs-gff-index', locationType: 'UriLocation' } }
+                    gffGzLocation: { uri: '/db/cumin_ssrs.gff.gz', locationType: 'UriLocation' },
+                    index: { location: { uri: '/db/cumin_ssrs.gff.gz.tbi', locationType: 'UriLocation' } }
                 }
             },
             {
@@ -92,8 +92,8 @@ function initializeJBrowse2() {
                 assemblyNames: ['Cuminum_cyminum'],
                 adapter: {
                     type: 'Gff3TabixAdapter',
-                    gffGzLocation: { uri: '/api/genome-browser/mirna-gff', locationType: 'UriLocation' },
-                    index: { location: { uri: '/api/genome-browser/mirna-gff-index', locationType: 'UriLocation' } }
+                    gffGzLocation: { uri: '/db/cumin_mirna.gff.gz', locationType: 'UriLocation' },
+                    index: { location: { uri: '/db/cumin_mirna.gff.gz.tbi', locationType: 'UriLocation' } }
                 }
             },
             {
@@ -103,8 +103,8 @@ function initializeJBrowse2() {
                 assemblyNames: ['Cuminum_cyminum'],
                 adapter: {
                     type: 'Gff3TabixAdapter',
-                    gffGzLocation: { uri: '/api/genome-browser/sec-metabolites-gff', locationType: 'UriLocation' },
-                    index: { location: { uri: '/api/genome-browser/sec-metabolites-gff-index', locationType: 'UriLocation' } }
+                    gffGzLocation: { uri: '/db/cumin_sec_metabolites.gff.gz', locationType: 'UriLocation' },
+                    index: { location: { uri: '/db/cumin_sec_metabolites.gff.gz.tbi', locationType: 'UriLocation' } }
                 }
             }
         ],

@@ -46,7 +46,7 @@ function fetchStats() {
                 
                 // Initialize Charts
                 if (window.renderCharts) {
-                    window.renderCharts(data.tf_distribution, data.ssr_distribution, data.mirna_distribution);
+                    window.renderCharts(data.tf_distribution, data.ssr_distribution, data.mirna_distribution, data.sec_metab_distribution);
                 }
             }
         })
@@ -300,20 +300,30 @@ function nextSecPage() { loadSecMetabolites(currentSecPage + 1); }
 // ----------------------------------------------------
 function loadSsrs(page = 1) {
     currentSsrPage = page;
-    const limit = document.getElementById('ssr-limit-select').value;
-    const search = document.getElementById('ssr-search-input').value;
-    const type = document.getElementById('ssr-type-select').value;
+    const limit = document.getElementById('ssr-limit-select') ? document.getElementById('ssr-limit-select').value : 20;
+    const motif = document.getElementById('ssr-motif-input') ? document.getElementById('ssr-motif-input').value.trim() : '';
+    const geneId = document.getElementById('ssr-gene-input') ? document.getElementById('ssr-gene-input').value.trim() : '';
+    const type = document.getElementById('ssr-type-select') ? document.getElementById('ssr-type-select').value : '';
     
     const tbody = document.getElementById('ssrs-table-body');
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;">Loading SSR primers...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:30px;">Loading SSR primers...</td></tr>';
     
-    fetch(`/api/ssrs?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}&type=${encodeURIComponent(type)}`)
+    fetch(`/api/ssrs?page=${page}&limit=${limit}&motif=${encodeURIComponent(motif)}&gene_id=${encodeURIComponent(geneId)}&type=${encodeURIComponent(type)}`)
         .then(res => res.json())
         .then(res => {
             if (res.status === 'success') {
                 tbody.innerHTML = '';
+                
+                const pagInfo = document.getElementById('ssrs-pagination-info');
+                const prevBtn = document.getElementById('ssrs-prev-btn');
+                const nextBtn = document.getElementById('ssrs-next-btn');
+
+                if (pagInfo) pagInfo.textContent = `Page ${res.page} of ${res.total_pages || 1} (${res.total.toLocaleString()} total markers)`;
+                if (prevBtn) prevBtn.disabled = res.page <= 1;
+                if (nextBtn) nextBtn.disabled = res.page >= res.total_pages;
+
                 if (res.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;">No matching SSR markers found.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:30px;">No matching SSR markers found.</td></tr>';
                     return;
                 }
                 
@@ -323,10 +333,20 @@ function loadSsrs(page = 1) {
                         ? `<a href="#" onclick="searchGeneById('${ssr.gene_id}'); return false;" class="mono-text" style="color:var(--accent-indigo); font-weight:700;">${ssr.gene_id}</a>`
                         : `<span style="color:var(--text-secondary); font-size:0.8rem;">Intergenic</span>`;
                     
+                    let locBadge = `<span class="badge" style="background:#f1f5f9; color:#475569;">Intergenic</span>`;
+                    if (ssr.ssr_location === 'Coding (CDS)') {
+                        locBadge = `<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:700;">Coding (CDS)</span>`;
+                    } else if (ssr.ssr_location === 'Non-coding (Intron)') {
+                        locBadge = `<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:600;">Non-coding (Intron)</span>`;
+                    } else if (ssr.ssr_location === 'Non-coding (Exon/UTR)') {
+                        locBadge = `<span class="badge" style="background:#f3e8ff; color:#7e22ce; font-weight:600;">Non-coding (Exon/UTR)</span>`;
+                    }
+
                     tr.innerHTML = `
                         <td class="mono-text" title="Original Raw ID: ${ssr.original_id || ''}"><strong>${ssr.ssr_id}</strong></td>
                         <td class="mono-text" style="font-size:0.8rem;">${ssr.contig}:${ssr.start}-${ssr.end}</td>
                         <td>${geneHtml}</td>
+                        <td>${locBadge}</td>
                         <td><span class="badge badge-amber">${ssr.ssr_type}</span></td>
                         <td class="mono-text"><strong>${ssr.motif}</strong> (${ssr.repeat_count}x)</td>
                         <td class="mono-text" style="font-size:0.8rem;">
@@ -343,10 +363,6 @@ function loadSsrs(page = 1) {
                     `;
                     tbody.appendChild(tr);
                 });
-
-                document.getElementById('ssr-pagination-info').textContent = `Page ${res.page} of ${res.total_pages} (${res.total.toLocaleString()} total markers)`;
-                document.getElementById('ssr-prev-btn').disabled = res.page <= 1;
-                document.getElementById('ssr-next-btn').disabled = res.page >= res.total_pages;
             }
         });
 }
@@ -363,6 +379,13 @@ function searchGeneById(geneId) {
 function handleSsrSearch(e) { if (e.key === 'Enter') loadSsrs(1); }
 function prevSsrPage() { if (currentSsrPage > 1) loadSsrs(currentSsrPage - 1); }
 function nextSsrPage() { loadSsrs(currentSsrPage + 1); }
+
+function clearSsrFilters() {
+    if (document.getElementById('ssr-motif-input')) document.getElementById('ssr-motif-input').value = '';
+    if (document.getElementById('ssr-gene-input')) document.getElementById('ssr-gene-input').value = '';
+    if (document.getElementById('ssr-type-select')) document.getElementById('ssr-type-select').value = '';
+    loadSsrs(1);
+}
 
 // ----------------------------------------------------
 // 4. TRANSCRIPTION FACTORS DATA TABLE
@@ -452,7 +475,7 @@ function loadMirna(page = 1) {
                         <td class="mono-text" style="color:var(--accent-emerald);">${m.expectation}</td>
                         <td><span class="badge ${m.inhibition === 'Cleavage' ? 'badge-emerald' : 'badge-amber'}">${m.inhibition}</span></td>
                         <td class="mono-text" style="font-size:0.75rem;">${m.target_aligned ? m.target_aligned.substring(0, 30) + '...' : '-'}</td>
-                        <td><a href="${m.mirbase_url}" target="_blank" class="external-link">miRBase ID</a></td>
+                        <td><a href="${m.mirbase_url}" target="_blank" class="external-link" title="Open official miRBase Accession ${m.mirbase_id}">${m.mirbase_id}</a></td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -475,7 +498,14 @@ function copyText(text) {
 }
 
 function exportData(type) {
-    window.location.href = `/api/${type}?format=csv`;
+    if (type === 'ssrs') {
+        const motif = document.getElementById('ssr-motif-input') ? document.getElementById('ssr-motif-input').value.trim() : '';
+        const geneId = document.getElementById('ssr-gene-input') ? document.getElementById('ssr-gene-input').value.trim() : '';
+        const ssrType = document.getElementById('ssr-type-select') ? document.getElementById('ssr-type-select').value : '';
+        window.location.href = `/api/ssrs?format=csv&motif=${encodeURIComponent(motif)}&gene_id=${encodeURIComponent(geneId)}&type=${encodeURIComponent(ssrType)}`;
+    } else {
+        window.location.href = `/api/${type}?format=csv`;
+    }
 }
 
 // ----------------------------------------------------
@@ -538,3 +568,67 @@ function copyCitationText() {
         alert('Citation copied to clipboard!');
     }
 }
+
+// ----------------------------------------------------
+// 7. INTERACTIVE TUTORIAL HELPER FUNCTIONS
+// ----------------------------------------------------
+function tutorialSearch(tab, query, selectId, selectVal) {
+    switchTab(tab);
+    if (selectId && selectVal !== undefined && selectVal !== null) {
+        const sel = document.getElementById(selectId);
+        if (sel) {
+            sel.value = selectVal;
+        }
+    }
+    
+    if (tab === 'genes') {
+        const input = document.getElementById('gene-search-input');
+        if (input) input.value = query || '';
+        loadGenes(1);
+    } else if (tab === 'sec-metabolites') {
+        const input = document.getElementById('sec-search-input');
+        if (input) input.value = query || '';
+        loadSecMetabolites(1);
+    } else if (tab === 'ssrs') {
+        const input = document.getElementById('ssr-search-input');
+        if (input) input.value = query || '';
+        loadSsrs(1);
+    } else if (tab === 'tfs') {
+        const input = document.getElementById('tf-search-input');
+        if (input) input.value = query || '';
+        loadTfs(1);
+    } else if (tab === 'mirna') {
+        const input = document.getElementById('mirna-search-input');
+        if (input) input.value = query || '';
+        loadMirna(1);
+    }
+}
+
+function loadBlastSampleSequence(fastaSeq) {
+    switchTab('blast');
+    const input = document.getElementById('blast-query-input');
+    if (input) {
+        input.value = fastaSeq;
+    }
+    const container = document.getElementById('tab-blast');
+    if (container) {
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function toggleFaqAccordion(headerEl) {
+    const item = headerEl.parentElement;
+    const isExpanded = item.classList.contains('active');
+    document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('active'));
+    if (!isExpanded) {
+        item.classList.add('active');
+    }
+}
+
+function scrollToTutorialSection(sectionId) {
+    const el = document.getElementById(sectionId);
+    if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+

@@ -1,170 +1,108 @@
 #!/usr/bin/env python3
 """
 02_mine_ssrs_and_primers.py
-Mines Simple Sequence Repeats (SSRs / Microsatellites) from Cuminum cyminum gene sequences
-and designs PCR primer pairs (Forward, Reverse, Tm, Product Size).
+Parses Krait SSR mining output (krait-ssr) and designed primer pairs (krait-ssr-primers).
+Converts numeric motif types (1..6) to standard names (Mononucleotide..Hexanucleotide)
+and links top candidate PCR primer pairs (entry=1).
 """
 
 import os
 import sys
-import re
 import json
 
-def parse_fasta(fasta_path):
-    sequences = {}
-    current_id = None
-    current_seq = []
-    
-    print(f"[*] Reading FASTA file: {fasta_path}")
-    with open(fasta_path, 'r', encoding='utf-8', errors='ignore') as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            if line.startswith('>'):
-                if current_id:
-                    sequences[current_id] = "".join(current_seq)
-                current_id = line[1:].split()[0]
-                current_seq = []
-            else:
-                current_seq.append(line.upper())
-        if current_id:
-            sequences[current_id] = "".join(current_seq)
-            
-    print(f"[+] Total FASTA sequences loaded: {len(sequences)}")
-    return sequences
+def process_krait_ssrs_and_primers(base_dir):
+    krait_ssr_path = os.path.join(base_dir, 'krait-ssr')
+    krait_primers_path = os.path.join(base_dir, 'krait-ssr-primers')
 
-def calculate_tm(primer_seq):
-    """Calculates approximate melting temperature (Tm) using Wallace rule / standard GC formula."""
-    a = primer_seq.count('A')
-    t = primer_seq.count('T')
-    g = primer_seq.count('G')
-    c = primer_seq.count('C')
-    if len(primer_seq) <= 14:
-        return (a + t) * 2 + (g + c) * 4
-    return round(64.9 + 41 * (g + c - 16.4) / len(primer_seq), 1)
+    if not os.path.exists(krait_ssr_path):
+        print(f"[-] File not found: {krait_ssr_path}")
+        return []
 
-def design_primer_pair(sequence, ssr_start, ssr_end):
-    """
-    Designs PCR forward and reverse primer pairs around the SSR region.
-    Returns (forward_primer, reverse_primer, tm_f, tm_r, product_size)
-    """
-    seq_len = len(sequence)
-    # Upstream 5' region for Forward Primer
-    flank_left_start = max(0, ssr_start - 120)
-    flank_left_end = max(0, ssr_start - 20)
-    
-    # Downstream 3' region for Reverse Primer
-    flank_right_start = min(seq_len, ssr_end + 20)
-    flank_right_end = min(seq_len, ssr_end + 120)
-    
-    left_sub = sequence[flank_left_start:flank_left_end]
-    right_sub = sequence[flank_right_start:flank_right_end]
-    
-    # Find candidate Forward Primer (20 bp)
-    f_primer = ""
-    f_pos = 0
-    for i in range(len(left_sub) - 20, -1, -1):
-        cand = left_sub[i:i+20]
-        gc = (cand.count('G') + cand.count('C')) / 20.0
-        if 0.4 <= gc <= 0.65:
-            f_primer = cand
-            f_pos = flank_left_start + i
-            break
-    if not f_primer and len(left_sub) >= 20:
-        f_primer = left_sub[-20:]
-        f_pos = flank_left_end - 20
+    # 1. Parse top primer pairs (entry = 1) from krait-ssr-primers
+    primer_info = {}
+    if os.path.exists(krait_primers_path):
+        print(f"[*] Parsing Krait primer pairs file: {krait_primers_path}")
+        with open(krait_primers_path, 'r', encoding='utf-8', errors='ignore') as f:
+            for line in f:
+                parts = line.strip().split('\t')
+                if len(parts) >= 12:
+                    target = parts[1] # e.g. ssr-1-1
+                    entry = parts[2]
+                    if entry == '1': # Top candidate pair
+                        row_id = target.split('-')[-1]
+                        primer_info[row_id] = {
+                            'product_size': int(parts[3]) if parts[3].isdigit() else 0,
+                            'tm_f': float(parts[4]) if parts[4].replace('.','',1).isdigit() else 60.0,
+                            'gc1': float(parts[5]) if parts[5].replace('.','',1).isdigit() else 50.0,
+                            'primer_forward': parts[7],
+                            'tm_r': float(parts[8]) if parts[8].replace('.','',1).isdigit() else 60.0,
+                            'gc2': float(parts[9]) if parts[9].replace('.','',1).isdigit() else 50.0,
+                            'primer_reverse': parts[11]
+                        }
+        print(f"[+] Loaded {len(primer_info):,} top Krait primer pairs (entry=1).")
 
-    # Find candidate Reverse Primer (20 bp reverse complement)
-    r_primer = ""
-    r_pos = 0
-    comp = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G', 'N': 'N'}
-    for i in range(0, len(right_sub) - 20):
-        cand_fw = right_sub[i:i+20]
-        gc = (cand_fw.count('G') + cand_fw.count('C')) / 20.0
-        if 0.4 <= gc <= 0.65:
-            r_primer = "".join([comp.get(b, 'N') for b in reversed(cand_fw)])
-            r_pos = flank_right_start + i + 20
-            break
-    if not r_primer and len(right_sub) >= 20:
-        cand_fw = right_sub[:20]
-        r_primer = "".join([comp.get(b, 'N') for b in reversed(cand_fw)])
-        r_pos = flank_right_start + 20
+    # 2. Motif type mapping (1..6 -> Mononucleotide..Hexanucleotide)
+    type_map = {
+        '1': 'Mononucleotide',
+        '2': 'Dinucleotide',
+        '3': 'Trinucleotide',
+        '4': 'Tetranucleotide',
+        '5': 'Pentanucleotide',
+        '6': 'Hexanucleotide'
+    }
 
-    if f_primer and r_primer:
-        tm_f = calculate_tm(f_primer)
-        tm_r = calculate_tm(r_primer)
-        product_size = max(0, r_pos - f_pos)
-        return f_primer, r_primer, tm_f, tm_r, product_size
-    else:
-        return "N/A", "N/A", 0.0, 0.0, 0
-
-def mine_ssrs(sequences):
-    print("[*] Mining SSRs and designing PCR primers...")
+    print(f"[*] Parsing Krait SSR loci file: {krait_ssr_path}")
     ssrs = []
-    
-    # SSR motif patterns and minimum repeat thresholds
-    ssr_rules = [
-        ('Dinucleotide', r'([ATGC]{2})\1{5,}', 6, 2),
-        ('Trinucleotide', r'([ATGC]{3})\1{4,}', 5, 3),
-        ('Tetranucleotide', r'([ATGC]{4})\1{3,}', 4, 4),
-        ('Pentanucleotide', r'([ATGC]{5})\1{2,}', 3, 5),
-        ('Hexanucleotide', r'([ATGC]{6})\1{2,}', 3, 6),
-    ]
-    
-    ssr_counter = 1
-    for gene_id, seq in sequences.items():
-        if len(seq) < 100:
-            continue
-            
-        found_in_gene = set()
-        for ssr_type, pattern, min_repeats, motif_len in ssr_rules:
-            for match in re.finditer(pattern, seq):
-                start = match.start()
-                end = match.end()
-                matched_seq = match.group(0)
-                motif = matched_seq[:motif_len]
-                repeat_count = len(matched_seq) // motif_len
-                
-                # Check for overlap/duplicate
-                pos_key = (start, end)
-                if pos_key in found_in_gene:
-                    continue
-                found_in_gene.add(pos_key)
-                
-                # Design primers
-                f_primer, r_primer, tm_f, tm_r, product_size = design_primer_pair(seq, start, end)
-                
+    with open(krait_ssr_path, 'r', encoding='utf-8', errors='ignore') as f:
+        for line in f:
+            parts = line.strip().split('\t')
+            if len(parts) >= 9:
+                row_id = parts[0]
+                scaf = parts[1].strip()
+                start = int(parts[2])
+                end = int(parts[3])
+                motif = parts[4].strip()
+                comp = parts[5].strip()
+                raw_type = parts[6].strip()
+                stype = type_map.get(raw_type, f"Type_{raw_type}")
+                repeat_cnt = int(parts[7])
+                length = int(parts[8])
+
+                p = primer_info.get(row_id, {
+                    'primer_forward': 'N/A',
+                    'primer_reverse': 'N/A',
+                    'tm_f': 0.0,
+                    'tm_r': 0.0,
+                    'product_size': 0
+                })
+
                 ssr_record = {
-                    'ssr_id': f"CC_SSR_{ssr_counter:06d}",
-                    'gene_id': gene_id,
-                    'ssr_type': ssr_type,
-                    'motif': motif,
-                    'repeat_count': repeat_count,
-                    'start': start + 1,
+                    'ssr_id': f"CcSSR_{int(row_id):06d}",
+                    'original_id': row_id,
+                    'contig': scaf,
+                    'start': start,
                     'end': end,
-                    'length': len(matched_seq),
-                    'primer_forward': f_primer,
-                    'primer_reverse': r_primer,
-                    'tm_f': tm_f,
-                    'tm_r': tm_r,
-                    'product_size': product_size
+                    'motif': motif,
+                    'ssr_type': stype,
+                    'repeat_count': repeat_cnt,
+                    'length': length,
+                    'primer_forward': p['primer_forward'],
+                    'primer_reverse': p['primer_reverse'],
+                    'tm_f': p['tm_f'],
+                    'tm_r': p['tm_r'],
+                    'product_size': p['product_size']
                 }
                 ssrs.append(ssr_record)
-                ssr_counter += 1
-                
-    print(f"[+] Total SSRs mined and primers designed: {len(ssrs)}")
+
+    print(f"[+] Total Krait SSRs processed: {len(ssrs):,}")
     return ssrs
 
 if __name__ == '__main__':
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    fasta_file = os.path.join(base_dir, 'cumin_predicted_genes.fasta')
-    
-    sequences = parse_fasta(fasta_file)
-    ssr_data = mine_ssrs(sequences)
+    ssr_data = process_krait_ssrs_and_primers(base_dir)
     
     output_json = os.path.join(base_dir, 'db', 'parsed_ssrs.json')
     os.makedirs(os.path.dirname(output_json), exist_ok=True)
     with open(output_json, 'w', encoding='utf-8') as f:
         json.dump(ssr_data, f, indent=2)
-    print(f"[✓] Saved parsed SSRs and primers to: {output_json}")
+    print(f"[✓] Saved parsed Krait SSRs and primers to: {output_json}")

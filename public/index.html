@@ -28,7 +28,13 @@
                 <h1 class="header-main-title">A Comprehensive Genomic Resource for <em>Cuminum cyminum</em> Varietal Improvement & Functional Genomics</h1>
             </div>
             <div class="header-logo-right">
-                <div class="badge-cdfd">BRIC - CDFD</div>
+                <div class="portal-logo-wrapper" style="display: flex; align-items: center; gap: 12px; background: #ffffff; border: 1px solid #cbd5e1; padding: 6px 14px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                    <img src="cumindb_logo.png" alt="CuminDB Logo Emblem" style="height: 54px; width: auto; object-fit: contain;">
+                    <div style="text-align: left;">
+                        <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.15rem; color: #0f172a; display: block; line-height: 1.1;">CuminDB</span>
+                        <span style="font-family: 'Montserrat', sans-serif; font-size: 0.68rem; font-weight: 800; color: #059669; letter-spacing: 0.06em; text-transform: uppercase;">Genomic Portal</span>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -74,8 +80,8 @@
             <!-- Hero Banner -->
             <div class="hero-banner">
                 <h1 class="hero-title">CuminDB Genomic Repository</h1>
-                <p class="hero-subtitle">
-                    An integrated computational genomics portal for <em>Cuminum cyminum</em> (Cumin). CuminDB compiles contig-level draft assembly GFF annotations, OmicsBox/Blast2GO functional mappings, SSR microsatellite PCR primers, transcription factor classifications, psRNATarget miRNA targets cross-referenced with miRBase, and JBrowse 2 database integrations.
+                <p class="hero-subtitle" style="text-align: justify; text-justify: inter-word; line-height: 1.6;">
+                    <strong>CuminDB</strong> is a comprehensive computational genomics portal for <em>Cuminum cyminum</em> L. (Cumin; Family Apiaceae, 2n = 14, ~2.6 Gb genome size), an economically vital spice and medicinal crop prized globally for its essential oils, bioactive monoterpenes (notably cuminaldehyde), and therapeutic properties. CuminDB compiles draft genome assembly annotations, 33,595 structural gene models mapped with OmicsBox/Blast2GO functional annotations, 213,248 SSR microsatellite loci with thermodynamic PCR primers, 1,065 plant transcription factor models across 53 families, 887,912 psRNATarget microRNA target interactions cross-referenced with official miRBase accessions, and secondary metabolite biosynthetic gene clusters. Interactive tools include an embedded JBrowse 2 linear genome browser and a local SequenceServer BLAST alignment engine to facilitate molecular breeding, marker-assisted selection, and comparative genomics across Apiaceae species.
                 </p>
             </div>
 
@@ -101,8 +107,8 @@
                     <div class="metric-header">
                         <span>SSR MARKERS & PRIMERS</span>
                     </div>
-                    <div class="metric-value" id="stat-ssrs">1,869</div>
-                    <div class="metric-sub">Designed PCR primer pairs</div>
+                    <div class="metric-value" id="stat-ssrs">294,013</div>
+                    <div class="metric-sub">227,112 designed PCR primer pairs</div>
                 </div>
 
                 <div class="metric-card">
@@ -117,36 +123,84 @@
 
 
             <!-- Proportional Summary Charts Grid -->
-            <h2 style="font-size: 1.2rem; color: var(--text-primary); margin: 24px 0 14px;">Genomic Distribution</h2>
-            <div class="charts-grid">
-                <div class="chart-card">
-                    <h3 style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 10px;">Top Transcription Factor Families</h3>
-                    <div class="chart-container">
+            <!-- Proportional Summary Charts Grid -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin: 28px 0 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                <div>
+                    <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0;">Interactive Genomic Distribution & Multi-Omic Analytics</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 4px 0 0;">Click on any chart bar or slice segment to jump directly into the pre-filtered database table.</p>
+                </div>
+            </div>
+
+            <div class="charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px; margin-bottom: 28px;">
+                
+                <!-- Chart 1: Transcription Factor Families -->
+                <div class="chart-card" style="background:#ffffff; border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow-card); min-height:330px; overflow:hidden;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="font-size: 0.95rem; font-weight:700; color: var(--text-primary); margin:0;">Top 10 Transcription Factor Families</h3>
+                        <button class="btn btn-sm" onclick="exportChartPNG('chart-tfs', 'cumin_tf_distribution')" style="font-size:0.75rem; padding:2px 8px;">Export PNG</button>
+                    </div>
+                    <div class="chart-container" style="position:relative; height: 250px; max-height:250px; overflow:hidden;">
                         <canvas id="chart-tfs"></canvas>
                     </div>
                 </div>
 
-                <div class="chart-card">
-                    <h3 style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 10px;">SSR Motif Class Proportions</h3>
-                    <div class="chart-container">
+                <!-- Chart 2: SSR Motif Class Proportions -->
+                <div class="chart-card" style="background:#ffffff; border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow-card); min-height:330px; overflow:hidden;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="font-size: 0.95rem; font-weight:700; color: var(--text-primary); margin:0;">SSR Motif Repeat Proportions</h3>
+                        <button class="btn btn-sm" onclick="exportChartPNG('chart-ssrs', 'cumin_ssr_distribution')" style="font-size:0.75rem; padding:2px 8px;">Export PNG</button>
+                    </div>
+                    <div class="chart-container" style="position:relative; height: 250px; max-height:250px; overflow:hidden;">
                         <canvas id="chart-ssrs"></canvas>
                     </div>
                 </div>
 
-                <div class="chart-card">
-                    <h3 style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 10px;">miRNA Inhibition Mode Breakdown</h3>
-                    <div class="chart-container">
+                <!-- Chart 3: miRNA Inhibition Mechanism Breakdown -->
+                <div class="chart-card" style="background:#ffffff; border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow-card); min-height:330px; overflow:hidden;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="font-size: 0.95rem; font-weight:700; color: var(--text-primary); margin:0;">miRNA Inhibition Mechanism Breakdown</h3>
+                        <button class="btn btn-sm" onclick="exportChartPNG('chart-mirna', 'cumin_mirna_inhibition')" style="font-size:0.75rem; padding:2px 8px;">Export PNG</button>
+                    </div>
+                    <div class="chart-container" style="position:relative; height: 250px; max-height:250px; overflow:hidden;">
                         <canvas id="chart-mirna"></canvas>
                     </div>
                 </div>
-            </div>
 
-            <!-- Biological Context Card -->
-            <div class="content-card">
-                <h3 class="card-title">Project Significance</h3>
-                <p style="color: var(--text-secondary); line-height: 1.5;">
-                    <em>Cuminum cyminum</em> L. is an economically essential spice crop (2n = 14) within the Apiaceae family. <strong>CuminDB</strong> is established to support molecular breeding, marker-assisted selection, comparative genomics, and functional gene discovery.
-                </p>
+                <!-- Chart 4: Secondary Metabolite Categories -->
+                <div class="chart-card" style="background:#ffffff; border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow-card); min-height:330px; overflow:hidden;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="font-size: 0.95rem; font-weight:700; color: var(--text-primary); margin:0;">Secondary Metabolite Categories</h3>
+                        <button class="btn btn-sm" onclick="exportChartPNG('chart-sec-metab', 'cumin_secondary_metabolites')" style="font-size:0.75rem; padding:2px 8px;">Export PNG</button>
+                    </div>
+                    <div class="chart-container" style="position:relative; height: 250px; max-height:250px; overflow:hidden;">
+                        <canvas id="chart-sec-metab"></canvas>
+                    </div>
+                </div>
+
+                <!-- Card 5: Species Overview & Phytochemical Profile -->
+                <div class="content-card" style="margin-bottom: 0; background:#ffffff; border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow-card);">
+                    <h3 class="card-title" style="font-size:0.95rem; font-weight:700; color:var(--text-primary); margin-bottom:12px;">Species Overview & Phytochemical Profile</h3>
+                    <ul style="color: var(--text-secondary); line-height: 1.6; font-size: 0.86rem; margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; text-align: justify; text-justify: inter-word;">
+                        <li><strong>Taxonomy & Origin:</strong> <em>Cuminum cyminum</em> L. ("Jeera"/"Zeera") is an annual medicinal spice crop in the Apiaceae family (Umbelliferae), originating in the Mediterranean & Middle East.</li>
+                        <li><strong>Global Export Share:</strong> India is the world's largest exporter of cumin (<strong>62.83% global share</strong>), with Rajasthan and Gujarat contributing <strong>80% of national production</strong>.</li>
+                        <li><strong>Botanical Features:</strong> Slender branched stems (30–50 cm), compound leaves, pink umbel flowers, and cremocarp fruits containing aromatic seeds.</li>
+                        <li><strong>Phytochemical Composition:</strong> Seeds are rich in cuminaldehyde (<strong>~63% of total essential oil</strong>), monoterpenes, flavonoids, and essential minerals (Cu, Fe, K) & vitamins (B, C, E).</li>
+                        <li><strong>Therapeutic Value:</strong> Exhibits potent antioxidant, antimicrobial, antidiabetic, carminative, antiflatulent, and immunomodulatory properties.</li>
+                    </ul>
+                </div>
+
+                <!-- Card 6: Genome Architecture & CuminDB Scope -->
+                <div class="content-card" style="margin-bottom: 0; background:#ffffff; border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow-card);">
+                    <h3 class="card-title" style="font-size:0.95rem; font-weight:700; color:var(--text-primary); margin-bottom:12px;">Genome Architecture & CuminDB Scope</h3>
+                    <ul style="color: var(--text-secondary); line-height: 1.6; font-size: 0.86rem; margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; text-align: justify; text-justify: inter-word;">
+                        <li><strong>Genome Size & Karyotype:</strong> Diploid genome (2n = 14; 2.66 pg / <strong>~2,601 Mb</strong>) with 157.38 kb chloroplast and 241.72 kb mitochondrial organelle genomes.</li>
+                        <li><strong>Repeat Complexity:</strong> High proportion of long, near-identical repeats (<strong>~70–80% transposable elements</strong>), representing a major genomic assembly challenge.</li>
+                        <li><strong>Cultivar Focus:</strong> First-ever draft genome sequence platform constructed for the Indian cultivar <strong>GC-20</strong> (developed by SDAU, Gujarat).</li>
+                        <li><strong>Integrated Genomics Scope:</strong> Compiles <strong>33,595 structural genes</strong>, <strong>213,248 SSR markers with PCR primers</strong>, <strong>1,065 plant TFs</strong>, <strong>887,912 miRNA targets</strong>, and secondary metabolite clusters.</li>
+                        <li><strong>Omics Tools:</strong> Features embedded <strong>JBrowse 2</strong> genome browser and local <strong>SequenceServer BLAST</strong> engines for molecular breeding and Apiaceae comparative genomics.</li>
+                    </ul>
+                </div>
+
             </div>
 
         </section>
@@ -177,18 +231,18 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="data-table">
+                    <table class="data-table fit-window">
                         <thead>
                             <tr>
-                                <th style="min-width: 120px;">Gene ID</th>
-                                <th style="min-width: 140px;">Contig</th>
-                                <th style="min-width: 130px;">Position</th>
-                                <th style="min-width: 60px;">Strand</th>
-                                <th style="min-width: 320px;">Description</th>
-                                <th style="min-width: 180px;">GO IDs & Terms</th>
-                                <th style="min-width: 120px;">Enzyme (EC)</th>
-                                <th style="min-width: 150px;">InterPro Signatures</th>
-                                <th style="min-width: 80px;">Details</th>
+                                <th>Gene ID</th>
+                                <th>Contig</th>
+                                <th>Position</th>
+                                <th>Strand</th>
+                                <th>Description</th>
+                                <th>GO IDs & Terms</th>
+                                <th>Enzyme (EC)</th>
+                                <th>InterPro Signatures</th>
+                                <th>Details</th>
                             </tr>
                         </thead>
                         <tbody id="genes-table-body">
@@ -246,15 +300,13 @@
                     <button class="btn btn-success" onclick="exportData('ssrs')">Export CSV</button>
                 </div>
 
-                <div class="controls-bar">
-                    <div class="search-group">
-                        <input type="text" id="ssr-search-input" class="input-field" placeholder="Search by SSR ID, Gene ID, or Motif..." onkeyup="handleSsrSearch(event)">
-                        <button class="btn btn-primary" onclick="loadSsrs(1)">Search</button>
-                    </div>
-
-                    <div style="display: flex; gap: 14px; align-items: center;">
-                        <label for="ssr-type-select" style="font-size: 0.88rem; color: var(--text-secondary);">SSR Type:</label>
-                        <select id="ssr-type-select" class="input-field" style="width: 170px;" onchange="loadSsrs(1)">
+                <div class="controls-bar" style="flex-wrap: wrap; gap: 12px;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; flex: 1;">
+                        <input type="text" id="ssr-motif-input" class="input-field" style="width: 200px;" placeholder="Search by Motif (e.g. GA, CTT)..." onkeyup="handleSsrSearch(event)">
+                        <input type="text" id="ssr-gene-input" class="input-field" style="width: 220px;" placeholder="Search by Gene ID (e.g. CcGene_26192)..." onkeyup="handleSsrSearch(event)">
+                        
+                        <label for="ssr-type-select" style="font-size: 0.88rem; color: var(--text-secondary); margin-left: 4px;">SSR Type:</label>
+                        <select id="ssr-type-select" class="input-field" style="width: 165px;" onchange="loadSsrs(1)">
                             <option value="">All Types</option>
                             <option value="Mononucleotide">Mononucleotide</option>
                             <option value="Dinucleotide">Dinucleotide</option>
@@ -262,11 +314,15 @@
                             <option value="Tetranucleotide">Tetranucleotide</option>
                             <option value="Pentanucleotide">Pentanucleotide</option>
                             <option value="Hexanucleotide">Hexanucleotide</option>
-                            <option value="Compound">Compound</option>
                         </select>
+                        
+                        <button class="btn btn-primary" onclick="loadSsrs(1)">Search</button>
+                        <button class="btn btn-secondary" onclick="clearSsrFilters()" style="padding: 8px 14px; font-size: 0.84rem;">Reset</button>
+                    </div>
 
+                    <div style="display: flex; gap: 8px; align-items: center;">
                         <label for="ssr-limit-select" style="font-size: 0.88rem; color: var(--text-secondary);">Rows:</label>
-                        <select id="ssr-limit-select" class="input-field" style="width: 90px;" onchange="loadSsrs(1)">
+                        <select id="ssr-limit-select" class="input-field" style="width: 85px;" onchange="loadSsrs(1)">
                             <option value="10">10</option>
                             <option value="20" selected>20</option>
                             <option value="50">50</option>
@@ -276,12 +332,13 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="data-table">
+                    <table class="data-table fit-window">
                         <thead>
                             <tr>
                                 <th>SSR ID</th>
                                 <th>Contig Locus</th>
                                 <th>Gene ID</th>
+                                <th>Genomic Region</th>
                                 <th>Type</th>
                                 <th>Motif</th>
                                 <th>Forward Primer (5'-3') & Tm</th>
@@ -290,7 +347,7 @@
                             </tr>
                         </thead>
                         <tbody id="ssrs-table-body">
-                            <tr><td colspan="8" style="text-align:center; padding:30px;">Loading SSR markers...</td></tr>
+                            <tr><td colspan="9" style="text-align:center; padding:30px;">Loading SSR markers...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -336,7 +393,7 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="data-table">
+                    <table class="data-table fit-window">
                         <thead>
                             <tr>
                                 <th>Gene ID</th>
@@ -389,7 +446,7 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="data-table">
+                    <table class="data-table fit-window">
                         <thead>
                             <tr>
                                 <th>miRNA Accession</th>
@@ -448,16 +505,16 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="data-table">
+                    <table class="data-table fit-window">
                         <thead>
                             <tr>
-                                <th style="min-width: 120px;">Gene ID</th>
-                                <th style="min-width: 140px;">Contig Locus</th>
-                                <th style="min-width: 150px;">Pathway Category</th>
-                                <th style="min-width: 280px;">Functional Description</th>
-                                <th style="min-width: 180px;">GO Terms & IDs</th>
-                                <th style="min-width: 180px;">KEGG Pathways</th>
-                                <th style="min-width: 80px;">Details</th>
+                                <th>Gene ID</th>
+                                <th>Contig Locus</th>
+                                <th>Pathway Category</th>
+                                <th>Functional Description</th>
+                                <th>GO Terms & IDs</th>
+                                <th>KEGG Pathways</th>
+                                <th>Details</th>
                             </tr>
                         </thead>
                         <tbody id="sec-table-body">
@@ -481,23 +538,76 @@
             <div class="content-card">
                 <h2 class="card-title">SequenceServer Web BLAST Search Engine</h2>
 
-                <!-- SequenceServer Operational Guide -->
-                <div style="background: var(--bg-card-hover); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 18px; margin-bottom: 20px; font-size:0.85rem; color:var(--text-secondary);">
-                    <h4 style="color:var(--text-primary); margin-bottom:6px; font-weight:700;">How SequenceServer Works</h4>
-                    <p style="line-height:1.5; margin-bottom:8px;">
-                        SequenceServer provides a local, rapid BLAST interface pointing to our database indexes. Query databases are built using <code>makeblastdb -in cumin_predicted_cds.fasta -dbtype nucl</code> and <code>makeblastdb -in cumin_predicted_protein.fasta -dbtype prot</code>. The local alignment search is run directly using the SequenceServer daemon.
+                <!-- SequenceServer Operational & Architecture Guide Card -->
+                <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 22px; margin-bottom: 24px; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-primary); margin: 0;">SequenceServer Web BLAST Search Engine Architecture</h3>
+                            <span class="badge badge-emerald" style="font-size: 0.75rem;">NCBI BLAST+ v2.14.0+ Integrated</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <span class="badge" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; font-weight:600;">E-value Threshold: 1e-5</span>
+                            <span class="badge" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; font-weight:600;">Real-Time FASTA Auto-Detection</span>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
+                        The <strong>CuminDB Web BLAST Search Engine</strong> is powered by an integrated local <strong>SequenceServer</strong> alignment daemon. It enables rapid, high-throughput sequence similarity searches across <em>Cuminum cyminum</em> genomic scaffolds, predicted coding sequences (CDS), and translated protein models using <code>ncbi-blast+</code> indexes with interactive circular chord and ribbon visualization graphics.
                     </p>
+
+                    <!-- Technical Specifications Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+                        
+                        <!-- Block 1: Nucleotide Indexing -->
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-md); padding: 14px;">
+                            <div style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                                <span>Nucleotide Database Indexing</span>
+                                <code style="font-size:0.75rem; color:#0284c7;">-dbtype nucl</code>
+                            </div>
+                            <code style="display: block; background: #0f172a; color: #38bdf8; padding: 8px 12px; border-radius: 4px; font-size: 0.78rem; font-family: monospace; overflow-x: auto; margin-bottom: 6px;">
+                                makeblastdb -in cumin_predicted_cds.fasta -dbtype nucl -title "Cumin_CDS"
+                            </code>
+                            <p style="font-size: 0.78rem; color: #64748b; margin: 0; line-height: 1.4;">
+                                Indexes 33,595 high-confidence coding sequences for <code>blastn</code> and <code>tblastn</code> searches.
+                            </p>
+                        </div>
+
+                        <!-- Block 2: Protein Indexing -->
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-md); padding: 14px;">
+                            <div style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                                <span>Protein Database Indexing</span>
+                                <code style="font-size:0.75rem; color:#059669;">-dbtype prot</code>
+                            </div>
+                            <code style="display: block; background: #0f172a; color: #34d399; padding: 8px 12px; border-radius: 4px; font-size: 0.78rem; font-family: monospace; overflow-x: auto; margin-bottom: 6px;">
+                                makeblastdb -in cumin_predicted_protein.fasta -dbtype prot -title "Cumin_Protein"
+                            </code>
+                            <p style="font-size: 0.78rem; color: #64748b; margin: 0; line-height: 1.4;">
+                                Indexes 33,595 translated amino acid sequence models for <code>blastp</code> and <code>blastx</code> searches.
+                            </p>
+                        </div>
+
+                    </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 320px; gap: 24px;">
                     <div>
-                        <label style="font-size: 0.88rem; color: var(--text-secondary); display:block; margin-bottom:8px;">Paste FASTA Query Sequence:</label>
-                        <textarea id="blast-query-input" class="blast-textarea" placeholder=">Query_sequence_1&#10;ATGGCCACCACCATGCAAGCTAGCTAGCTAG..."></textarea>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <label style="font-size: 0.88rem; color: var(--text-secondary);">Paste FASTA Query Sequence:</label>
+                            <!-- Auto-Detection Status Indicator -->
+                            <div id="blast-autodetect-status" style="font-size: 0.82rem; color: var(--text-secondary); background: #f8fafc; border: 1px solid #e2e8f0; padding: 4px 10px; border-radius: var(--radius-md); display: flex; align-items: center; gap: 8px;">
+                                <span>Sequence Type: <strong id="detected-seq-type" style="color: #64748b;">Waiting for input...</strong></span>
+                                <span id="detected-program-badge" class="badge badge-emerald" style="display:none;">Auto Selected: blastn</span>
+                            </div>
+                        </div>
+
+                        <textarea id="blast-query-input" class="blast-textarea" placeholder=">Query_sequence_1&#10;ATGGCCACCACCATGCAAGCTAGCTAGCTAG..." oninput="autoDetectSequenceType()"></textarea>
                         
-                        <div style="display:flex; gap:14px;">
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
                             <button class="btn btn-primary" onclick="runBlast()">Execute BLAST Search</button>
-                            <button class="btn" onclick="loadSampleBlast()">Load Sample FASTA</button>
-                            <button class="btn" onclick="document.getElementById('blast-query-input').value=''">Clear Input</button>
+                            <button class="btn" onclick="loadSampleBlast('cds')">Load CDS (Nucl)</button>
+                            <button class="btn" onclick="loadSampleBlast('protein')">Load Protein (AA)</button>
+                            <button class="btn" onclick="loadSampleBlast('genome')">Load Contig (Genome)</button>
+                            <button class="btn" onclick="document.getElementById('blast-query-input').value=''; autoDetectSequenceType();">Clear Input</button>
                         </div>
                     </div>
 
@@ -526,11 +636,31 @@
                 <div id="blast-results-container" style="margin-top: 28px; display:none;">
                     <h3 class="card-title" style="font-size: 1.15rem; border-top: 1px solid var(--border-color); padding-top: 20px;">BLAST Alignment Output Results</h3>
                     
-                    <!-- Graphic Hit Overview (Ribbon Plot / Color-coded HSP align bars) -->
+                    <!-- Graphic Hit Overview & Chord Plot Container -->
                     <div id="blast-graphic-container" style="background:#ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 24px; box-shadow: var(--shadow-card);">
-                        <h4 style="font-size:0.9rem; font-weight:700; color:var(--text-primary); margin-bottom:12px;">Graphical Overview of Alignment Hits</h4>
-                        <div id="blast-ribbon-plot" style="position:relative; width: 100%; height: auto; overflow-x: auto;">
-                            <!-- SVG will be rendered here dynamically -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+                            <h4 style="font-size:0.95rem; font-weight:700; color:var(--text-primary); margin:0;">Graphical Overview & SequenceServer Diagrams</h4>
+                            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                                <button class="btn btn-sm" id="btn-view-ribbon" onclick="switchBlastPlotView('ribbon')" style="background:#0f172a; color:#ffffff;">Linear Ribbon Plot</button>
+                                <button class="btn btn-sm" id="btn-view-chord" onclick="switchBlastPlotView('chord')">Circular Chord Plot</button>
+                                <button class="btn btn-sm" id="btn-view-both" onclick="switchBlastPlotView('both')">Show Both</button>
+                                
+                                <div style="border-left: 1px solid var(--border-color); height: 24px; margin: 0 4px;"></div>
+                                
+                                <button class="btn btn-sm btn-primary" onclick="downloadBlastPlotSVG()" style="font-size:0.78rem;">Download SVG</button>
+                                <button class="btn btn-sm btn-primary" onclick="downloadBlastPlotPNG()" style="font-size:0.78rem;">Download PNG</button>
+                            </div>
+                        </div>
+
+                        <!-- 1. Linear Ribbon Plot -->
+                        <div id="blast-ribbon-plot-wrapper" style="position:relative; width: 100%; height: auto; overflow-x: auto;">
+                            <div id="blast-ribbon-plot"></div>
+                        </div>
+
+                        <!-- 2. Circular Chord Plot -->
+                        <div id="blast-chord-plot-wrapper" style="position:relative; width: 100%; height: auto; overflow-x: auto; margin-top:24px; padding-top:20px; border-top:1px dashed var(--border-color); display:none;">
+                            <h5 style="font-size:0.88rem; font-weight:700; color:var(--text-primary); margin-bottom:12px; text-align:center;">SequenceServer Circular Alignment Chord Diagram</h5>
+                            <div id="blast-chord-plot" style="display:flex; justify-content:center;"></div>
                         </div>
                     </div>
 
@@ -545,119 +675,589 @@
         <!-- TAB 8: RESEARCH TEAM & LAB CONTACT -->
         <section id="tab-team" class="tab-content" style="display:none;">
             <div class="content-card">
-                <h2 class="card-title">Research Team & Laboratory Information</h2>
+                
+                <!-- Laboratory Header Banner -->
+                <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: var(--radius-lg); padding: 24px 28px; color: #ffffff; margin-bottom: 24px; border-left: 5px solid #38bdf8;">
+                    <span style="font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #38bdf8; display: block; margin-bottom: 4px;">Laboratory of Genome Informatics (LGI)</span>
+                    <h2 style="font-size: 1.4rem; font-weight: 800; color: #ffffff; margin: 0 0 8px;">CuminDB Research Team & Institutional Contact</h2>
+                    <p style="font-size: 0.9rem; color: #94a3b8; line-height: 1.5; margin: 0; max-width: 900px;">
+                        CuminDB is developed and maintained by the Laboratory of Genome Informatics at the Centre for DNA Fingerprinting and Diagnostics (CDFD). Our research focuses on computational genomics, structural and functional annotations, molecular marker mining, and regulatory networks in agricultural crop species.
+                    </p>
+                </div>
 
-                <!-- PI Card -->
-                <div class="team-card pi-card" style="margin-bottom: 24px;">
-                    <div class="team-role">Principal Investigator</div>
-                    <div class="team-name">Dr. Ajay Kumar Mahato</div>
+                <!-- Principal Investigator Card -->
+                <div class="team-card pi-card" style="margin-bottom: 28px; padding: 28px; border-left: 5px solid #0284c7; background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap;">
+                        <img src="images/team/Ajay.png" alt="Dr. Ajay Kumar Mahato" style="width: 130px; height: 130px; border-radius: 50%; object-fit: cover; object-position: center top; border: 3px solid #0284c7; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15); flex-shrink: 0;">
+                        <div style="flex: 1; min-width: 260px;">
+                            <span class="team-role" style="color: #0284c7; font-weight: 800; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Principal Investigator & Corresponding Author</span>
+                            <h3 class="team-name" style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin: 0 0 6px;">Dr. Ajay Kumar Mahato</h3>
+                            <p style="font-size: 0.88rem; color: #475569; margin: 0 0 10px; line-height: 1.5;">
+                                Scientist & Head, Laboratory of Genome Informatics (LGI)<br>
+                                BRIC - Centre for DNA Fingerprinting and Diagnostics (CDFD), Hyderabad, India.
+                            </p>
+                            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                                <div>
+                                    <span style="font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-right: 6px;">Institutional Email:</span>
+                                    <code style="background: #e0f2fe; border: 1px solid #7dd3fc; padding: 4px 10px; border-radius: 6px; font-size: 0.84rem; color: #0369a1; font-weight: 700;">akmahato@cdfd.org.in</code>
+                                </div>
+                                <div>
+                                    <span style="font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-right: 6px;">Lab Email:</span>
+                                    <code style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 6px; font-size: 0.84rem; color: #0f172a; font-weight: 600;">akmlgi2021@gmail.com</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Research Scholars Grid -->
-                <h3 style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 14px;">Research Scholars</h3>
-                <div class="team-grid">
-                    <div class="team-card">
-                        <div class="team-role">Research Scholar</div>
-                        <div class="team-name">Lakshmi Devi</div>
+                <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--border-color);">
+                    Research Scholars & Computational Contributors
+                </h3>
+                
+                <div class="team-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 28px;">
+                    
+                    <!-- Scholar 1: Ramesh Eerapagula -->
+                    <div class="team-card" style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 22px 16px; text-align: center; box-shadow: var(--shadow-card); transition: var(--transition);">
+                        <img src="images/team/Ramesh.jpeg" alt="Ramesh Eerapagula" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; object-position: center top; margin: 0 auto 14px; border: 3px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.06); display: block;">
+                        <h4 class="team-name" style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0 0 4px;">Ramesh Eerapagula</h4>
+                        <span class="team-role" style="font-size: 0.82rem; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 0.04em; display: block;">Research Scholar</span>
+                        <div style="margin-top: 8px;">
+                            <code style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 6px; font-size: 0.76rem; color: #0f172a; font-weight: 600;">rameshe@cdfd.org.in</code>
+                        </div>
                     </div>
 
-                    <div class="team-card">
-                        <div class="team-role">Research Scholar</div>
-                        <div class="team-name">Priyanka Kushwaha</div>
+                    <!-- Scholar 2: Lakshmi Devi -->
+                    <div class="team-card" style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 22px 16px; text-align: center; box-shadow: var(--shadow-card); transition: var(--transition);">
+                        <img src="images/team/LakshmiDevi.jpeg" alt="Lakshmi Devi" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; object-position: center top; margin: 0 auto 14px; border: 3px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.06); display: block;">
+                        <h4 class="team-name" style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0 0 4px;">Lakshmi Devi</h4>
+                        <span class="team-role" style="font-size: 0.82rem; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 0.04em; display: block;">Research Scholar</span>
+                        <div style="margin-top: 8px;">
+                            <code style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 6px; font-size: 0.76rem; color: #0f172a; font-weight: 600;">lakshmidevi@cdfd.org.in</code>
+                        </div>
                     </div>
 
-                    <div class="team-card">
-                        <div class="team-role">Research Scholar</div>
-                        <div class="team-name">Ramesh Eerapagula</div>
+                    <!-- Scholar 3: Priyanka Kushwaha -->
+                    <div class="team-card" style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 22px 16px; text-align: center; box-shadow: var(--shadow-card); transition: var(--transition);">
+                        <img src="images/team/Priyanka.jpeg" alt="Priyanka Kushwaha" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; object-position: center top; margin: 0 auto 14px; border: 3px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.06); display: block;">
+                        <h4 class="team-name" style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0 0 4px;">Priyanka Kushwaha</h4>
+                        <span class="team-role" style="font-size: 0.82rem; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 0.04em; display: block;">Research Scholar</span>
+                        <div style="margin-top: 8px;">
+                            <code style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 6px; font-size: 0.76rem; color: #0f172a; font-weight: 600;">priyankakushwaha@cdfd.org.in</code>
+                        </div>
                     </div>
 
-                    <div class="team-card">
-                        <div class="team-role">Research Scholar</div>
-                        <div class="team-name">Ankit Bhagat</div>
+                    <!-- Scholar 4: Ankit Bhagat -->
+                    <div class="team-card" style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 22px 16px; text-align: center; box-shadow: var(--shadow-card); transition: var(--transition);">
+                        <img src="images/team/Ankit.jpeg" alt="Ankit Bhagat" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; object-position: center top; margin: 0 auto 14px; border: 3px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.06); display: block;">
+                        <h4 class="team-name" style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0 0 4px;">Ankit Bhagat</h4>
+                        <span class="team-role" style="font-size: 0.82rem; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 0.04em; display: block;">Research Scholar</span>
+                        <div style="margin-top: 8px;">
+                            <code style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 6px; font-size: 0.76rem; color: #0f172a; font-weight: 600;">ankitbhagat@cdfd.org.in</code>
+                        </div>
                     </div>
+
                 </div>
 
-                <!-- Institutional Contact Card -->
+                <!-- Institutional Contact & Laboratory Card -->
                 <div class="contact-card">
-                    <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 12px;">Laboratory Contact Details</h3>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 16px;">
+                        Laboratory Details & Institutional Address
+                    </h3>
+                    
                     <div class="contact-grid">
                         <div class="contact-item">
-                            <strong>Institution:</strong>
-                            BRIC - Centre for DNA Fingerprinting and Diagnostics (CDFD)<br>
-                            Inner Ring Road, Uppal, Hyderabad, Telangana 500039, India.
+                            <strong>Institution & Postal Address</strong>
+                            <p style="margin-top: 4px; line-height: 1.5;">
+                                BRIC - Centre for DNA Fingerprinting and Diagnostics (CDFD)<br>
+                                Inner Ring Road, Uppal, Hyderabad,<br>
+                                Telangana 500039, India.
+                            </p>
                         </div>
+
                         <div class="contact-item">
-                            <strong>Email Address:</strong>
-                            <code>akmlgi2021@gmail.com</code>
+                            <strong>Official Email & Inquiries</strong>
+                            <p style="margin-top: 4px; line-height: 1.5;">
+                                Head Email: <code>akmahato@cdfd.org.in</code> / <code>akmlgi2021@gmail.com</code><br>
+                                Response Window: 1-2 business days for data queries and collaborative requests.
+                            </p>
                         </div>
+
                         <div class="contact-item">
-                            <strong>Lab Portal Link:</strong>
-                            Official Website: <a href="http://www.cdfd.org.in" target="_blank" class="external-link">www.cdfd.org.in</a>
+                            <strong>Web Portal & Code Repository</strong>
+                            <p style="margin-top: 4px; line-height: 1.5;">
+                                Official CDFD Portal: <a href="http://www.cdfd.org.in" target="_blank" class="external-link">www.cdfd.org.in</a><br>
+                                Laboratory GitHub: <a href="https://github.com/lgi-cdfd" target="_blank" class="external-link">github.com/lgi-cdfd</a>
+                            </p>
                         </div>
                     </div>
                 </div>
+
             </div>
         </section>
 
         <!-- TAB: TUTORIAL & USER GUIDE -->
         <section id="tab-tutorial" class="tab-content" style="display:none;">
-            <div class="content-card">
-                <h2 class="card-title">CuminDB User Guide & Portal Tutorial</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 24px; line-height:1.5;">
-                    Welcome to the <strong>CuminDB Portal Tutorial</strong>. Learn how to search, analyze, navigate, and download multi-omics datasets for <em>Cuminum cuminum</em>.
-                </p>
-
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:20px;">
-                    
-                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:20px;">
-                        <h3 style="margin-top:0; color:#0369a1; font-size:1.05rem;">1. Searching Genes & Annotations</h3>
-                        <p style="font-size:0.88rem; color:#475569; line-height:1.5;">
-                            Navigate to <strong>Annotation &rarr; Functional Annotation</strong>. Query by standardized Gene ID (<code>CcGene_00001</code>), scaffold (<code>CcContig_000001</code>), GO ID (<code>GO:0009409</code>), EC code (<code>EC 2.7.11.1</code>), or InterPro signature.
-                        </p>
-                        <ul style="font-size:0.85rem; color:#334155; padding-left:18px;">
-                            <li>Click any <strong>GO ID</strong> badge to open AmiGO 2 details.</li>
-                            <li>Click any <strong>EC Code</strong> badge to open ExPASy ENZYME details.</li>
-                            <li>Click <strong>View</strong> to open the full Gene Annotation Details modal.</li>
-                        </ul>
-                    </div>
-
-                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:20px;">
-                        <h3 style="margin-top:0; color:#b45309; font-size:1.05rem;">2. Secondary Metabolism Pathways</h3>
-                        <p style="font-size:0.88rem; color:#475569; line-height:1.5;">
-                            Navigate to <strong>Annotation &rarr; Secondary Metabolism</strong>. Explore 294 biosynthetic pathways categorized into Terpenoids, Alkaloids, Phenylpropanoids, Polyketides, and Flavonoids.
-                        </p>
-                        <ul style="font-size:0.85rem; color:#334155; padding-left:18px;">
-                            <li>Filter by <strong>Pathway Category</strong> dropdown.</li>
-                            <li>Click hyperlinked <strong>KEGG Map IDs</strong> to view official KEGG metabolic charts.</li>
-                        </ul>
-                    </div>
-
-                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:20px;">
-                        <h3 style="margin-top:0; color:#047857; font-size:1.05rem;">3. Mining SSR Microsatellites & Primers</h3>
-                        <p style="font-size:0.88rem; color:#475569; line-height:1.5;">
-                            Navigate to <strong>SSR</strong>. Search over 213,248 PCR primer pairs mined across the draft assembly.
-                        </p>
-                        <ul style="font-size:0.85rem; color:#334155; padding-left:18px;">
-                            <li>Filter by repeat type (<code>Mononucleotide</code> to <code>Hexanucleotide</code>, <code>Compound</code>).</li>
-                            <li>Click <strong>Gene ID</strong> links to jump to intersecting gene loci.</li>
-                            <li>Use <strong>Copy</strong> buttons to copy forward/reverse primer sequences.</li>
-                        </ul>
-                    </div>
-
-                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:20px;">
-                        <h3 style="margin-top:0; color:#4338ca; font-size:1.05rem;">4. SequenceServer BLAST & JBrowse 2</h3>
-                        <p style="font-size:0.88rem; color:#475569; line-height:1.5;">
-                            Navigate to <strong>Tools &rarr; BLAST</strong> or <strong>Tools &rarr; JBrowse</strong>.
-                        </p>
-                        <ul style="font-size:0.85rem; color:#334155; padding-left:18px;">
-                            <li>Paste FASTA sequences into BLAST to search CDS, Protein, or Contig databases.</li>
-                            <li>Click <strong>View in JBrowse 2</strong> on BLAST hit results to inspect linear genomic tracks.</li>
-                        </ul>
-                    </div>
-
+            <div class="tutorial-wrapper">
+                
+                <!-- Hero Banner -->
+                <div class="tutorial-hero-banner">
+                    <h1>CuminDB User Guide & Bioinformatics Tutorial</h1>
+                    <p>
+                        Welcome to the <strong>CuminDB Portal Tutorial</strong>. This comprehensive guide provides step-by-step instructions for navigating structural gene models, functional annotations, SSR microsatellites, transcription factors, miRNA target networks, Web BLAST alignments, and JBrowse 2 linear genome tracks for <em>Cuminum cyminum</em>.
+                    </p>
                 </div>
+
+                <!-- Sticky Quick Jump Navigation Pills -->
+                <div class="tutorial-nav-pills">
+                    <button class="tutorial-nav-pill" onclick="scrollToTutorialSection('tut-overview')">Overview</button>
+                    <button class="tutorial-nav-pill" onclick="scrollToTutorialSection('tut-genes')">Gene Annotations</button>
+                    <button class="tutorial-nav-pill" onclick="scrollToTutorialSection('tut-pathways')">Secondary Metabolism</button>
+                    <button class="tutorial-nav-pill" onclick="scrollToTutorialSection('tut-ssrs')">SSR Primers</button>
+                    <button class="tutorial-nav-pill" onclick="scrollToTutorialSection('tut-tfs')">Transcription Factors</button>
+                    <button class="tutorial-nav-pill" onclick="scrollToTutorialSection('tut-mirna')">miRNA Targets</button>
+                    <button class="tutorial-nav-pill" onclick="scrollToTutorialSection('tut-tools')">BLAST & JBrowse 2</button>
+                    <button class="tutorial-nav-pill" onclick="scrollToTutorialSection('tut-faq')">FAQ & Guide</button>
+                </div>
+
+                <!-- MODULE 1: PLATFORM OVERVIEW & WORKFLOW -->
+                <div id="tut-overview" class="tutorial-module-card">
+                    <div class="tutorial-module-header">
+                        <div class="tutorial-module-title">
+                            1. Platform Architecture & Data Pipeline
+                        </div>
+                        <span class="tutorial-module-badge">System Overview</span>
+                    </div>
+
+                    <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.6; margin-bottom:16px;">
+                        CuminDB integrates computational genomics and multi-omics annotation datasets generated for <em>Cuminum cyminum</em> (Cumin). The portal enables rapid locus lookup, comparative ortholog mapping, primer mining, and sequence alignment visualization.
+                    </p>
+
+                    <div class="step-flow-grid">
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">1</div>
+                                <div class="step-card-title">Genome Assembly & Models</div>
+                            </div>
+                            <div class="step-card-desc">
+                                147,524 contigs reference assembly containing 30,619 predicted gene structural models (GFF3).
+                            </div>
+                            <ul class="step-bullets">
+                                <li>Contig scaffold coordinates</li>
+                                <li>Exon/CDS structural boundaries</li>
+                                <li>Tabix indexed GFF3 tracks</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">2</div>
+                                <div class="step-card-title">Functional Annotations</div>
+                            </div>
+                            <div class="step-card-desc">
+                                OmicsBox / Blast2GO functional assignments cross-referenced with international biological databases.
+                            </div>
+                            <ul class="step-bullets">
+                                <li>AmiGO 2 Gene Ontology (GO) IDs</li>
+                                <li>ExPASy ENZYME (EC) classification</li>
+                                <li>InterPro signature domains</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">3</div>
+                                <div class="step-card-title">Markers & Regulation</div>
+                            </div>
+                            <div class="step-card-desc">
+                                Mined markers and regulatory gene networks for marker-assisted breeding and functional discovery.
+                            </div>
+                            <ul class="step-bullets">
+                                <li>213,248 SSR PCR primer pairs</li>
+                                <li>1,049 TFs across 44 families</li>
+                                <li>887,911 miRNA target interactions</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tutorial-callout">
+                        <div>
+                            <strong>Pro Tip: Quick Navigation & Exporting</strong><br>
+                            Every data table in CuminDB supports instant search filtering, adjustable pagination rows (10, 20, 50, 100), and one-click CSV export via the top-right <strong>Export CSV</strong> button.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 2: GENE SEARCH & FUNCTIONAL ANNOTATIONS -->
+                <div id="tut-genes" class="tutorial-module-card">
+                    <div class="tutorial-module-header">
+                        <div class="tutorial-module-title">
+                            2. Querying Gene Models & Functional Annotations
+                        </div>
+                        <span class="tutorial-module-badge">Annotation Portal</span>
+                    </div>
+
+                    <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.6; margin-bottom:16px;">
+                        Access the <strong>Annotation &rarr; Functional Annotation</strong> tab to search through predicted gene models and detailed functional ontology assignments.
+                    </p>
+
+                    <div class="step-flow-grid">
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">1</div>
+                                <div class="step-card-title">Flexible Keyword Search</div>
+                            </div>
+                            <div class="step-card-desc">
+                                Type standardized identifiers or functional terms into the search bar:
+                            </div>
+                            <ul class="step-bullets">
+                                <li><strong>Gene ID:</strong> <code>CcGene_00001</code></li>
+                                <li><strong>Contig Locus:</strong> <code>CcContig_000001</code></li>
+                                <li><strong>GO Term:</strong> <code>GO:0009409</code></li>
+                                <li><strong>EC Number:</strong> <code>EC 2.7.11.1</code></li>
+                            </ul>
+                            <div class="tutorial-action-bar">
+                                <button class="btn-try-example" onclick="tutorialSearch('genes', 'CcGene_00001')">Search CcGene_00001</button>
+                                <button class="btn-try-example" onclick="tutorialSearch('genes', 'GO:0009409')">Search GO:0009409</button>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">2</div>
+                                <div class="step-card-title">Interactive Badge Links</div>
+                            </div>
+                            <div class="step-card-desc">
+                                Directly inspect external bioinformatics databases via color-coded badges:
+                            </div>
+                            <ul class="step-bullets">
+                                <li><span class="badge badge-emerald">GO IDs</span> &rarr; Opens AmiGO 2 database</li>
+                                <li><span class="badge badge-amber">EC Codes</span> &rarr; Opens ExPASy ENZYME</li>
+                                <li><span class="badge badge-indigo">InterPro</span> &rarr; Opens EBI InterPro</li>
+                            </ul>
+                            <div class="tutorial-action-bar">
+                                <button class="btn-try-example" onclick="tutorialSearch('genes', '2.7.11.1')">Try Protein Kinases (EC 2.7.11.1)</button>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">3</div>
+                                <div class="step-card-title">Gene Details Modal</div>
+                            </div>
+                            <div class="step-card-desc">
+                                Click the <strong>View</strong> button on any row or click the Gene ID hyperlink to open the full annotation modal containing exact genomic coordinates, full GO term descriptions, and InterPro domain names.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 3: SECONDARY METABOLITE PATHWAYS -->
+                <div id="tut-pathways" class="tutorial-module-card">
+                    <div class="tutorial-module-header">
+                        <div class="tutorial-module-title">
+                            3. Secondary Metabolite Biosynthetic Pathways
+                        </div>
+                        <span class="tutorial-module-badge">Metabolism Mining</span>
+                    </div>
+
+                    <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.6; margin-bottom:16px;">
+                        Navigate to <strong>Annotation &rarr; Secondary Metabolism</strong> to explore 294 curated secondary metabolite pathway genes essential for cumin essential oils, aroma, and defense mechanisms.
+                    </p>
+
+                    <div class="step-flow-grid">
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">1</div>
+                                <div class="step-card-title">Filter by Category</div>
+                            </div>
+                            <div class="step-card-desc">
+                                Select specific metabolic classes from the <strong>Pathway Category</strong> dropdown menu:
+                            </div>
+                            <ul class="step-bullets">
+                                <li><strong>Terpenoids:</strong> Essential oil biosynthesis (cuminaldehyde, pinene, terpene synthases)</li>
+                                <li><strong>Phenylpropanoids:</strong> Monoterpenes & flavonoids</li>
+                                <li><strong>Alkaloids & Polyketides:</strong> Defense compounds</li>
+                            </ul>
+                            <div class="tutorial-action-bar">
+                                <button class="btn-try-example" onclick="tutorialSearch('sec-metabolites', '', 'sec-cat-select', 'Terpenoids')">Filter Terpenoids</button>
+                                <button class="btn-try-example" onclick="tutorialSearch('sec-metabolites', '', 'sec-cat-select', 'Phenylpropanoids')">Filter Phenylpropanoids</button>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">2</div>
+                                <div class="step-card-title">KEGG Pathway Diagrams</div>
+                            </div>
+                            <div class="step-card-desc">
+                                Click hyperlinked <span class="badge badge-amber">KEGG Map IDs</span> (e.g., <code>map00900</code>) to launch official Kyoto Encyclopedia of Genes and Genomes interactive pathway diagrams in a new browser tab.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 4: SSR MARKERS & PRIMERS -->
+                <div id="tut-ssrs" class="tutorial-module-card">
+                    <div class="tutorial-module-header">
+                        <div class="tutorial-module-title">
+                            4. Mining SSR Microsatellites & PCR Primers
+                        </div>
+                        <span class="tutorial-module-badge">Molecular Breeding</span>
+                    </div>
+
+                    <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.6; margin-bottom:16px;">
+                        Access the <strong>SSR</strong> tab to query 213,248 simple sequence repeat (SSR) loci mined across contigs and predicted gene regions, complete with pre-designed PCR primer pairs.
+                    </p>
+
+                    <div class="step-flow-grid">
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">1</div>
+                                <div class="step-card-title">Motif & Type Filtering</div>
+                            </div>
+                            <div class="step-card-desc">
+                                Filter microsatellites by repeat length (Dinucleotide, Trinucleotide, etc.) or query specific nucleotide motifs (e.g., <code>GA</code>, <code>CTT</code>).
+                            </div>
+                            <ul class="step-bullets">
+                                <li>Dinucleotide (e.g., AT, GA, CT)</li>
+                                <li>Trinucleotide (e.g., CTT, GAA)</li>
+                                <li>Tetra/Penta/Hexanucleotide</li>
+                            </ul>
+                            <div class="tutorial-action-bar">
+                                <button class="btn-try-example" onclick="tutorialSearch('ssrs', '', 'ssr-type-select', 'Trinucleotide')">Trinucleotide SSRs</button>
+                                <button class="btn-try-example" onclick="tutorialSearch('ssrs', 'GA')">Search Motif 'GA'</button>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">2</div>
+                                <div class="step-card-title">Primer Specifications & Copy</div>
+                            </div>
+                            <div class="step-card-desc">
+                                Each marker includes Primer3 designed parameters:
+                            </div>
+                            <ul class="step-bullets">
+                                <li>Forward & Reverse primer sequences ($5'\rightarrow 3'$)</li>
+                                <li>Melting Temperatures ($T_m\ ^\circ\text{C}$)</li>
+                                <li>Expected amplicon product size (bp)</li>
+                            </ul>
+                            <div class="tutorial-action-bar">
+                                <button class="btn-try-example" onclick="tutorialSearch('ssrs', 'CcGene_00005')">Search Primers by Gene</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 5: TRANSCRIPTION FACTORS -->
+                <div id="tut-tfs" class="tutorial-module-card">
+                    <div class="tutorial-module-header">
+                        <div class="tutorial-module-title">
+                            5. Transcription Factors & TAIR Orthologs
+                        </div>
+                        <span class="tutorial-module-badge">Gene Regulation</span>
+                    </div>
+
+                    <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.6; margin-bottom:16px;">
+                        Access the <strong>TFs</strong> tab to inspect 1,049 predicted transcription factor genes classified into 44 major plant TF families.
+                    </p>
+
+                    <div class="step-flow-grid">
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">1</div>
+                                <div class="step-card-title">TF Family Classification</div>
+                            </div>
+                            <div class="step-card-desc">
+                                Filter by major regulatory families such as MYB, bHLH, AP2/ERF, NAC, bZIP, and WRKY using the <strong>TF Family</strong> dropdown.
+                            </div>
+                            <div class="tutorial-action-bar">
+                                <button class="btn-try-example" onclick="tutorialSearch('tfs', '', 'tf-family-select', 'MYB')">Filter MYB Family</button>
+                                <button class="btn-try-example" onclick="tutorialSearch('tfs', '', 'tf-family-select', 'WRKY')">Filter WRKY Family</button>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">2</div>
+                                <div class="step-card-title">Arabidopsis TAIR Links</div>
+                            </div>
+                            <div class="step-card-desc">
+                                View best-hit <em>Arabidopsis thaliana</em> locus IDs, BLAST alignment E-values, and click <strong>TAIR Accession</strong> hyperlinks to study functional orthology.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 6: miRNA TARGET INTERACTIONS -->
+                <div id="tut-mirna" class="tutorial-module-card">
+                    <div class="tutorial-module-header">
+                        <div class="tutorial-module-title">
+                            6. microRNA Target Networks & miRBase Integration
+                        </div>
+                        <span class="tutorial-module-badge">Small RNA Regulation</span>
+                    </div>
+
+                    <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.6; margin-bottom:16px;">
+                        Access the <strong>miRNA</strong> tab to explore 887,911 plant microRNA target interactions cross-referenced with miRBase accessions.
+                    </p>
+
+                    <div class="step-flow-grid">
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">1</div>
+                                <div class="step-card-title">Target Interaction Metrics</div>
+                            </div>
+                            <div class="step-card-desc">
+                                Query by microRNA accession (e.g., <code>ath-miR156a</code>) or target gene ID:
+                            </div>
+                            <ul class="step-bullets">
+                                <li>Expectation Score (lower indicates tighter binding)</li>
+                                <li>Mechanism: <span class="badge badge-emerald">Cleavage</span> vs <span class="badge badge-amber">Translational Inhibition</span></li>
+                                <li>Duplex alignment string representation</li>
+                            </ul>
+                            <div class="tutorial-action-bar">
+                                <button class="btn-try-example" onclick="tutorialSearch('mirna', 'miR156')">Search miR156 Targets</button>
+                                <button class="btn-try-example" onclick="tutorialSearch('mirna', 'miR396')">Search miR396 Targets</button>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">2</div>
+                                <div class="step-card-title">miRBase Database Links</div>
+                            </div>
+                            <div class="step-card-desc">
+                                Click hyperlinked <strong>miRBase ID</strong> tags to open official miRBase precursor hairpin structures and sequence mature arm annotations.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 7: WEB BLAST & JBROWSE 2 -->
+                <div id="tut-tools" class="tutorial-module-card">
+                    <div class="tutorial-module-header">
+                        <div class="tutorial-module-title">
+                            7. SequenceServer Web BLAST & JBrowse 2 Tracks
+                        </div>
+                        <span class="tutorial-module-badge">Alignment & Visualization</span>
+                    </div>
+
+                    <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.6; margin-bottom:16px;">
+                        Navigate to <strong>Tools &rarr; BLAST</strong> or <strong>Tools &rarr; JBrowse</strong> to run alignment searches or visualize linear genome browser tracks.
+                    </p>
+
+                    <div class="step-flow-grid">
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">1</div>
+                                <div class="step-card-title">Executing Web BLAST</div>
+                            </div>
+                            <div class="step-card-desc">
+                                Paste nucleotide or protein FASTA sequences into the query box. Select alignment parameters:
+                            </div>
+                            <ul class="step-bullets">
+                                <li><strong>Programs:</strong> blastn, blastp, blastx</li>
+                                <li><strong>Databases:</strong> Cumin CDS, Cumin Protein, Assembly Contigs</li>
+                                <li><strong>Expect Threshold:</strong> Default <code>1e-5</code></li>
+                            </ul>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-card-header">
+                                <div class="step-number">2</div>
+                                <div class="step-card-title">JBrowse 2 Linear Genome View</div>
+                            </div>
+                            <div class="step-card-desc">
+                                In BLAST search results, click <strong>View in JBrowse 2</strong> to jump straight to the exact contig coordinates and view GFF3 gene tracks in the embedded JBrowse 2 viewer.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Code Example Box -->
+                    <div class="tutorial-code-block">
+                        <div class="tutorial-code-header">
+                            <span>Sample FASTA Query Sequence (Cuminum cyminum CDS)</span>
+                            <button class="btn-try-example" style="padding:4px 10px; font-size:0.75rem;" onclick="loadBlastSampleSequence('>CcGene_00001_Sample_Query\nATGGCCACCACCATGCAAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAG\nATGGCCACCACCATGCAAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAG')">Load into BLAST Engine</button>
+                        </div>
+                        <pre style="margin:0;">>CcGene_00001_Sample_Query
+ATGGCCACCACCATGCAAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAG
+ATGGCCACCACCATGCAAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAG</pre>
+                    </div>
+                </div>
+
+                <!-- MODULE 8: FREQUENTLY ASKED QUESTIONS (FAQ) -->
+                <div id="tut-faq" class="tutorial-module-card">
+                    <div class="tutorial-module-header">
+                        <div class="tutorial-module-title">
+                            8. Frequently Asked Questions (FAQ)
+                        </div>
+                        <span class="tutorial-module-badge">User Guide</span>
+                    </div>
+
+                    <div class="faq-list">
+                        
+                        <div class="faq-item active">
+                            <div class="faq-question" onclick="toggleFaqAccordion(this)">
+                                <span>How do I cite CuminDB in my research publication?</span>
+                                <span style="font-size:1.1rem; color:#64748b;">&#9660;</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p style="margin-bottom:10px;">If you utilize datasets, PCR primers, annotation models, or BLAST results from CuminDB, please cite:</p>
+                                <div style="background:#f1f5f9; padding:12px; border-radius:6px; font-family:monospace; font-size:0.82rem; color:#0f172a; margin-bottom:10px;">
+                                    Ajay Kumar Mahato, Lakshmi Devi, Priyanka Kushwaha, Ramesh Eerapagula, Ankit Bhagat. CuminDB: An Interactive Genomic and Functional Annotation Database for Cuminum cyminum L. Scientific Data (2026).
+                                </div>
+                                <button class="btn btn-primary" style="font-size:0.78rem; padding:5px 12px;" onclick="showFooterModal('citation')">Open Citation Guide Modal</button>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaqAccordion(this)">
+                                <span>What bioinformatics pipelines were used to generate the annotations?</span>
+                                <span style="font-size:1.1rem; color:#64748b;">&#9660;</span>
+                            </div>
+                            <div class="faq-answer">
+                                Functional gene ontology assignments were performed using <strong>OmicsBox / Blast2GO</strong> against non-redundant plant databases. SSR microsatellites and PCR primers were mined using <strong>MISA</strong> and <strong>Primer3</strong>. Transcription factors were classified using <strong>iTAK / PlantTFDB</strong> standards, and microRNA targets were identified using <strong>psRNATarget</strong> mapped against <strong>miRBase v22</strong>.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaqAccordion(this)">
+                                <span>Can I download full FASTA files or bulk CSV tables?</span>
+                                <span style="font-size:1.1rem; color:#64748b;">&#9660;</span>
+                            </div>
+                            <div class="faq-answer">
+                                Yes! Navigate to the <strong>Downloads</strong> tab in the navigation bar to download complete genome assembly FASTA files, predicted CDS/protein sequences, full GFF3 gene annotations, SSR primer tables, TF families, and miRNA targets in CSV format.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaqAccordion(this)">
+                                <span>How do I search for SSR primers for a specific gene?</span>
+                                <span style="font-size:1.1rem; color:#64748b;">&#9660;</span>
+                            </div>
+                            <div class="faq-answer">
+                                Navigate to the <strong>SSR</strong> tab and type the Gene ID (e.g. <code>CcGene_00005</code>) into the search bar. The table will display all microsatellite loci intersecting that gene model, complete with forward/reverse primer sequences, $T_m$ temperatures, and product sizes.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaqAccordion(this)">
+                                <span>Who maintains CuminDB and how can I submit questions or feedback?</span>
+                                <span style="font-size:1.1rem; color:#64748b;">&#9660;</span>
+                            </div>
+                            <div class="faq-answer">
+                                CuminDB is developed and maintained by the <strong>Laboratory of Genome Informatics (LGI)</strong> at the <strong>BRIC - Centre for DNA Fingerprinting and Diagnostics (CDFD)</strong>, Hyderabad, India. For inquiries or collaboration, contact Dr. Ajay Kumar Mahato at <code>akmlgi2021@gmail.com</code> or view the <strong>Contact</strong> tab.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
         </section>
+
 
         <!-- TAB 9: DATA DOWNLOADS -->
         <section id="tab-download" class="tab-content" style="display:none;">
