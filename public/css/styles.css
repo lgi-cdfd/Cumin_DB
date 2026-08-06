@@ -216,45 +216,7 @@ body {
     color: var(--text-dim);
 }
 
-/* Modules Grid (Home Page - 3x3 layout) */
-.modules-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 24px;
-}
 
-.module-card {
-    background: #ffffff;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    transition: var(--transition);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-shadow: var(--shadow-card);
-    min-height: 220px;
-}
-
-.module-card:hover {
-    border-color: var(--border-highlight);
-    box-shadow: var(--shadow-hover);
-}
-
-.module-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 6px;
-}
-
-.module-desc {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    margin-bottom: 14px;
-    line-height: 1.45;
-}
 
 /* Charts Grid */
 .charts-grid {
@@ -708,14 +670,4 @@ a.external-link:hover {
     line-height: 1.6;
 }
 
-/* Responsiveness media query for home modules grid */
-@media (max-width: 992px) {
-    .modules-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-@media (max-width: 768px) {
-    .modules-grid {
-        grid-template-columns: 1fr;
-    }
-}
+
