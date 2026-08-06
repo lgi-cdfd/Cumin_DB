@@ -22,6 +22,7 @@ import json
 import sqlite3
 import subprocess
 import pandas as pd
+import csv
 from collections import defaultdict
 
 def main():
@@ -165,26 +166,97 @@ def main():
     print("\n[*] Step 3: Building Gene Models & Functional Annotations GFF3 Track...")
     
     annot_dict = {}
+
+    # 1. Parse generic_export.txt (OmicsBox / Blast2GO full exports)
+    generic_txt = os.path.join(base_dir, 'generic_export.txt')
+    if os.path.exists(generic_txt):
+        with open(generic_txt, 'r', encoding='utf-8', errors='ignore') as f:
+            reader = csv.DictReader(f)
+            for r in reader:
+                raw_name = r.get('Sequence Name', '').strip()
+                if not raw_name: continue
+                num_match = re.search(r'\d+', raw_name)
+                gid_key = f"CcGene_{int(num_match.group()):05d}" if num_match else gene_map.get(raw_name, raw_name)
+                
+                desc = r.get('Sequence Description', '').strip()
+                if desc in ['---NA---', 'nan', '-', '']: desc = ''
+                
+                go_ids = r.get('Annotation GO ID', '').strip()
+                go_terms = r.get('Annotation GO Term', '').strip()
+                ec_code = r.get('Enzyme Code', '').strip()
+                ec_name = r.get('Enzyme Name', '').strip()
+                ipr_go_ids = r.get('InterPro GO ID', '').strip()
+                ipr_go_terms = r.get('InterPro GO Term', '').strip()
+                ipr_name = r.get('InterPro Name', '').strip()
+                ipr_sigs = r.get('InterPro Signatures', '').strip()
+
+                annot_dict[gid_key] = {
+                    'desc': desc or 'Predicted protein',
+                    'go_ids': go_ids,
+                    'go_terms': go_terms,
+                    'ec_code': ec_code,
+                    'ec_name': ec_name,
+                    'ipr_go_ids': ipr_go_ids,
+                    'ipr_go_terms': ipr_go_terms,
+                    'ipr_name': ipr_name,
+                    'ipr_sigs': ipr_sigs,
+                    'kegg': '', 'nr': '', 'sp': ''
+                }
+
+    # 2. Parse cumin.annot
+    cumin_annot = os.path.join(base_dir, 'cumin.annot')
+    if os.path.exists(cumin_annot):
+        with open(cumin_annot, 'r', encoding='utf-8', errors='ignore') as f:
+            for line in f:
+                if not line.strip() or line.startswith('#'): continue
+                parts = line.strip().split('\t')
+                if len(parts) >= 2:
+                    raw_name = parts[0].strip()
+                    num_match = re.search(r'\d+', raw_name)
+                    gid_key = f"CcGene_{int(num_match.group()):05d}" if num_match else raw_name
+                    go_id = parts[1].strip()
+                    desc_extra = parts[2].strip() if len(parts) >= 3 else ''
+                    
+                    if gid_key in annot_dict:
+                        if go_id and go_id not in annot_dict[gid_key]['go_ids']:
+                            annot_dict[gid_key]['go_ids'] += (';' + go_id) if annot_dict[gid_key]['go_ids'] else go_id
+                        if desc_extra and (not annot_dict[gid_key]['desc'] or annot_dict[gid_key]['desc'] == 'Predicted protein'):
+                            annot_dict[gid_key]['desc'] = desc_extra
+                    else:
+                        annot_dict[gid_key] = {
+                            'desc': desc_extra or 'Predicted protein',
+                            'go_ids': go_id, 'go_terms': '', 'ec_code': '', 'ec_name': '',
+                            'ipr_go_ids': '', 'ipr_go_terms': '', 'ipr_name': '', 'ipr_sigs': '',
+                            'kegg': '', 'nr': '', 'sp': ''
+                        }
+
+    # 3. Fallback from annotations.csv
     if df_annot_raw is not None:
         for _, row in df_annot_raw.iterrows():
             gid = str(row['Gene_ID']).strip()
             new_gid = gene_map.get(gid, gid)
             desc = str(row.get('Description', '')).strip()
-            if desc in ['nan', '-']: desc = 'Predicted protein'
             gos = str(row.get('GOs', '')).strip()
-            if gos in ['nan', '-']: gos = ''
             kegg = str(row.get('KEGG_Pathway', '')).strip()
-            if kegg in ['nan', '-']: kegg = ''
             nr = str(row.get('NR_Hit', '')).strip()
             sp = str(row.get('SwissProt_Hit', '')).strip()
             
-            annot_dict[new_gid] = {
-                'desc': desc,
-                'gos': gos,
-                'kegg': kegg,
-                'nr': nr if nr != 'nan' else '',
-                'sp': sp if sp != 'nan' else ''
-            }
+            if new_gid in annot_dict:
+                if kegg and kegg != 'nan': annot_dict[new_gid]['kegg'] = kegg
+                if nr and nr != 'nan': annot_dict[new_gid]['nr'] = nr
+                if sp and sp != 'nan': annot_dict[new_gid]['sp'] = sp
+                if gos and gos != 'nan' and not annot_dict[new_gid]['go_ids']:
+                    annot_dict[new_gid]['go_ids'] = gos
+            else:
+                annot_dict[new_gid] = {
+                    'desc': desc if desc not in ['nan', '-'] else 'Predicted protein',
+                    'go_ids': gos if gos not in ['nan', '-'] else '',
+                    'go_terms': '', 'ec_code': '', 'ec_name': '',
+                    'ipr_go_ids': '', 'ipr_go_terms': '', 'ipr_name': '', 'ipr_sigs': '',
+                    'kegg': kegg if kegg not in ['nan', '-'] else '',
+                    'nr': nr if nr not in ['nan', '-'] else '',
+                    'sp': sp if sp not in ['nan', '-'] else ''
+                }
 
     genes_gff_lines = ["##gff-version 3\n"]
     parsed_genes_db = []
@@ -205,12 +277,18 @@ def main():
             strand = str(row['Strand']).strip()
             length = int(row['Length'])
 
-            ann = annot_dict.get(new_gid, {'desc': 'Predicted protein', 'gos': '', 'kegg': '', 'nr': '', 'sp': ''})
+            ann = annot_dict.get(new_gid, {
+                'desc': 'Predicted protein', 'go_ids': '', 'go_terms': '',
+                'ec_code': '', 'ec_name': '', 'ipr_go_ids': '', 'ipr_go_terms': '',
+                'ipr_name': '', 'ipr_sigs': '', 'kegg': '', 'nr': '', 'sp': ''
+            })
             gene_coords_map[new_gid] = (new_scaf, start, end, strand)
             gene_tree_by_contig[new_scaf].append((start, end, new_gid))
 
             attrs = f"ID={new_gid};Name={new_gid};description={ann['desc']}"
-            if ann['gos']: attrs += f";Ontology_term={ann['gos']}"
+            if ann['go_ids']: attrs += f";Ontology_term={ann['go_ids']}"
+            if ann['ec_code']: attrs += f";Dbxref=EC:{ann['ec_code']}"
+            if ann['ipr_sigs']: attrs += f";Dbxref=InterPro:{ann['ipr_sigs']}"
             if ann['kegg']: attrs += f";Dbxref={ann['kegg']}"
             
             genes_gff_lines.append(f"{new_scaf}\tEVM\tgene\t{start}\t{end}\t.\t{strand}\t.\t{attrs}\n")
@@ -223,12 +301,17 @@ def main():
                 'length': length,
                 'strand': strand,
                 'description': ann['desc'],
-                'go_terms': ann['gos'],
-                'go_ids': ann['gos'],
-                'ec_code': '',
-                'kegg_pathway': ann['kegg'],
-                'nr_hit': ann['nr'],
-                'swissprot_hit': ann['sp']
+                'go_terms': ann.get('go_terms', ''),
+                'go_ids': ann.get('go_ids', ''),
+                'ec_code': ann.get('ec_code', ''),
+                'ec_name': ann.get('ec_name', ''),
+                'interpro_go_ids': ann.get('ipr_go_ids', ''),
+                'interpro_go_terms': ann.get('ipr_go_terms', ''),
+                'interpro_name': ann.get('ipr_name', ''),
+                'interpro_signatures': ann.get('ipr_sigs', ''),
+                'kegg_pathway': ann.get('kegg', ''),
+                'nr_hit': ann.get('nr', ''),
+                'swissprot_hit': ann.get('sp', '')
             })
 
     write_sort_tabix_gff(genes_gff_lines, os.path.join(db_dir, 'cumin_genes'))
@@ -472,15 +555,21 @@ def main():
         go_terms TEXT,
         go_ids TEXT,
         ec_code TEXT,
+        ec_name TEXT,
+        interpro_go_ids TEXT,
+        interpro_go_terms TEXT,
+        interpro_name TEXT,
+        interpro_signatures TEXT,
         kegg_pathway TEXT,
         nr_hit TEXT,
         swissprot_hit TEXT
     )
     """)
     gene_tuples = [(g['gene_id'], g['contig'], g['start'], g['end'], g['length'], g['strand'],
-                    g['description'], g['go_terms'], g['go_ids'], g['ec_code'], g['kegg_pathway'],
-                    g['nr_hit'], g['swissprot_hit']) for g in parsed_genes_db]
-    cur.executemany("INSERT INTO genes VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", gene_tuples)
+                    g['description'], g['go_terms'], g['go_ids'], g['ec_code'], g['ec_name'],
+                    g['interpro_go_ids'], g['interpro_go_terms'], g['interpro_name'], g['interpro_signatures'],
+                    g['kegg_pathway'], g['nr_hit'], g['swissprot_hit']) for g in parsed_genes_db]
+    cur.executemany("INSERT INTO genes VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", gene_tuples)
 
     # Table 2: ssrs (Enriched with gene_id and ssr_location!)
     cur.execute("""

@@ -55,34 +55,71 @@ function fetchStats() {
 // ----------------------------------------------------
 // 2. GENE MODELS DATA TABLE & PAGINATION
 // ----------------------------------------------------
+let currentGenesCache = [];
+
+function formatGoBadges(goIdsStr, goTermsStr) {
+    if (!goIdsStr) return '<span style="color:#94a3b8;">-</span>';
+    const ids = goIdsStr.split(/[;,]/).map(s => s.trim()).filter(Boolean);
+    const terms = goTermsStr ? goTermsStr.split(/[;,]/).map(s => s.trim()) : [];
+    return ids.slice(0, 3).map((id, i) => {
+        const title = terms[i] || id;
+        return `<a href="https://amigo.geneontology.org/amigo/term/${id}" target="_blank" class="badge badge-emerald" style="text-decoration:none; display:inline-block; margin:2px;" title="${title}">${id}</a>`;
+    }).join('') + (ids.length > 3 ? ` <span style="font-size:0.75rem; color:#64748b;">+${ids.length - 3} more</span>` : '');
+}
+
+function formatEcBadges(ecStr, ecNameStr) {
+    if (!ecStr) return '<span style="color:#94a3b8;">-</span>';
+    const ecs = ecStr.split(/[;,]/).map(s => s.trim().replace(/^EC:/i, '')).filter(Boolean);
+    return ecs.map(ec => {
+        return `<a href="https://enzyme.expasy.org/EC/${ec}" target="_blank" class="badge badge-amber" style="text-decoration:none; display:inline-block; margin:2px;" title="${ecNameStr || 'Enzyme'}">EC ${ec}</a>`;
+    }).join(' ');
+}
+
+function formatInterProBadges(sigsStr, nameStr) {
+    if (!sigsStr) return '<span style="color:#94a3b8;">-</span>';
+    const sigs = sigsStr.split(/[;,]/).map(s => s.trim()).filter(Boolean);
+    return sigs.slice(0, 3).map(sig => {
+        const cleanSig = sig.split(' ')[0];
+        return `<a href="https://www.ebi.ac.uk/interpro/search/text/${cleanSig}" target="_blank" class="badge badge-indigo" style="text-decoration:none; display:inline-block; margin:2px;" title="${nameStr || cleanSig}">${cleanSig}</a>`;
+    }).join('') + (sigs.length > 3 ? ` <span style="font-size:0.75rem; color:#64748b;">+${sigs.length - 3} more</span>` : '');
+}
+
 function loadGenes(page = 1) {
     currentGenePage = page;
     const limit = document.getElementById('gene-limit-select').value;
     const search = document.getElementById('gene-search-input').value;
     
     const tbody = document.getElementById('genes-table-body');
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">Loading genes...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:30px;">Loading genes...</td></tr>';
     
     fetch(`/api/genes?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`)
         .then(res => res.json())
         .then(res => {
             if (res.status === 'success') {
                 tbody.innerHTML = '';
+                currentGenesCache = res.data;
+
                 if (res.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">No matching genes found.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:30px;">No matching genes found.</td></tr>';
                     return;
                 }
                 
                 res.data.forEach(gene => {
                     const tr = document.createElement('tr');
+                    const goBadges = formatGoBadges(gene.go_ids, gene.go_terms);
+                    const ecBadges = formatEcBadges(gene.ec_code, gene.ec_name);
+                    const iprBadges = formatInterProBadges(gene.interpro_signatures, gene.interpro_name);
+
                     tr.innerHTML = `
-                        <td class="mono-text"><strong>${gene.gene_id}</strong></td>
-                        <td>${gene.contig}</td>
-                        <td>${gene.start.toLocaleString()} - ${gene.end.toLocaleString()} (${gene.length} bp)</td>
+                        <td class="mono-text"><a href="#" onclick="openGeneModal('${gene.gene_id}'); return false;" style="color:var(--accent-indigo); font-weight:700;">${gene.gene_id}</a></td>
+                        <td class="mono-text" style="font-size:0.8rem;">${gene.contig}</td>
+                        <td style="font-size:0.8rem;">${gene.start.toLocaleString()} - ${gene.end.toLocaleString()} (${gene.length.toLocaleString()} bp)</td>
                         <td><span class="badge ${gene.strand === '+' ? 'badge-emerald' : 'badge-indigo'}">${gene.strand}</span></td>
-                        <td>${gene.description || '<span style="color:#6b7280;">Uncharacterized protein</span>'}</td>
-                        <td style="max-width:250px; overflow:hidden; text-overflow:ellipsis;">${gene.go_terms ? gene.go_terms.substring(0, 80) + '...' : '-'}</td>
-                        <td class="mono-text">${gene.ec_code || '-'}</td>
+                        <td style="max-width:220px; font-size:0.85rem; line-height:1.3;">${gene.description || '<span style="color:#94a3b8;">Predicted protein</span>'}</td>
+                        <td>${goBadges}</td>
+                        <td>${ecBadges}</td>
+                        <td>${iprBadges}</td>
+                        <td><button class="btn btn-primary" style="padding:4px 10px; font-size:0.78rem;" onclick="openGeneModal('${gene.gene_id}')">View</button></td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -92,6 +129,69 @@ function loadGenes(page = 1) {
                 document.getElementById('genes-next-btn').disabled = res.page >= res.total_pages;
             }
         });
+}
+
+function openGeneModal(geneId) {
+    const gene = currentGenesCache.find(g => g.gene_id === geneId);
+    if (!gene) return;
+
+    document.getElementById('modal-gene-title').textContent = `${gene.gene_id} - Functional Annotation`;
+    
+    const goList = gene.go_ids ? gene.go_ids.split(/[;,]/).map((id, i) => {
+        const term = (gene.go_terms ? gene.go_terms.split(/[;,]/)[i] : '') || '';
+        return `<li><a href="https://amigo.geneontology.org/amigo/term/${id.trim()}" target="_blank" style="color:#0284c7; font-weight:600; text-decoration:none;">${id.trim()}</a> ${term ? '- ' + term.trim() : ''}</li>`;
+    }).join('') : '<p style="color:#94a3b8;">No GO terms assigned.</p>';
+
+    const ecList = gene.ec_code ? gene.ec_code.split(/[;,]/).map(ec => {
+        const cleanEc = ec.trim().replace(/^EC:/i, '');
+        return `<li><a href="https://enzyme.expasy.org/EC/${cleanEc}" target="_blank" style="color:#d97706; font-weight:600; text-decoration:none;">EC ${cleanEc}</a> ${gene.ec_name ? '- ' + gene.ec_name : ''}</li>`;
+    }).join('') : '<p style="color:#94a3b8;">No EC number assigned.</p>';
+
+    const iprList = gene.interpro_signatures ? gene.interpro_signatures.split(/[;,]/).map(sig => {
+        const cleanSig = sig.trim().split(' ')[0];
+        return `<li><a href="https://www.ebi.ac.uk/interpro/search/text/${cleanSig}" target="_blank" style="color:#6366f1; font-weight:600; text-decoration:none;">${cleanSig}</a> ${sig.trim()}</li>`;
+    }).join('') : '<p style="color:#94a3b8;">No InterPro signatures found.</p>';
+
+    const body = document.getElementById('modal-gene-body');
+    body.innerHTML = `
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:16px; margin-bottom:16px;">
+            <h4 style="margin-top:0; color:#0f172a; font-size:0.95rem;">Protein Description</h4>
+            <p style="margin:0; font-size:0.9rem; color:#334155; line-height:1.4;">${gene.description || 'Predicted protein'}</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px;">
+                <span style="font-size:0.8rem; color:#64748b; font-weight:600;">Contig Locus</span>
+                <p style="margin:4px 0 0; font-family:monospace; font-weight:700; color:#0f172a;">${gene.contig}:${gene.start}-${gene.end} (${gene.strand})</p>
+            </div>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px;">
+                <span style="font-size:0.8rem; color:#64748b; font-weight:600;">Sequence Length</span>
+                <p style="margin:4px 0 0; font-weight:700; color:#0f172a;">${gene.length.toLocaleString()} bp</p>
+            </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+            <h4 style="margin-bottom:8px; color:#0369a1; font-size:0.92rem;">Gene Ontology (GO) Terms (AmiGO 2 Links)</h4>
+            <ul style="margin:0; padding-left:20px; font-size:0.88rem; line-height:1.5;">${goList}</ul>
+        </div>
+
+        <div style="margin-bottom:16px;">
+            <h4 style="margin-bottom:8px; color:#b45309; font-size:0.92rem;">Enzyme Classification (ExPASy ENZYME Links)</h4>
+            <ul style="margin:0; padding-left:20px; font-size:0.88rem; line-height:1.5;">${ecList}</ul>
+        </div>
+
+        <div>
+            <h4 style="margin-bottom:8px; color:#4338ca; font-size:0.92rem;">InterPro Domains & Signatures (EBI InterPro Links)</h4>
+            ${gene.interpro_name ? `<p style="font-size:0.85rem; color:#475569; margin-bottom:8px;"><strong>InterPro Name:</strong> ${gene.interpro_name}</p>` : ''}
+            <ul style="margin:0; padding-left:20px; font-size:0.88rem; line-height:1.5;">${iprList}</ul>
+        </div>
+    `;
+
+    document.getElementById('gene-detail-modal').style.display = 'flex';
+}
+
+function closeGeneModal() {
+    document.getElementById('gene-detail-modal').style.display = 'none';
 }
 
 function handleGeneSearch(e) {

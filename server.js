@@ -94,8 +94,8 @@ app.get('/api/genes', async (req, res) => {
         let params = [];
 
         if (search) {
-            whereClauses.push('(gene_id LIKE ? OR description LIKE ? OR go_terms LIKE ? OR ec_code LIKE ?)');
-            params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
+            whereClauses.push('(gene_id LIKE ? OR description LIKE ? OR go_terms LIKE ? OR go_ids LIKE ? OR ec_code LIKE ? OR interpro_name LIKE ? OR interpro_signatures LIKE ?)');
+            params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
         }
 
         if (contig) {
