@@ -1,4 +1,4 @@
-// CuminDB JBrowse 2 Linear Genome View Controller (browser.js)
+// CuminDB JBrowse 2 Multi-Track Genome View Controller (browser.js)
 
 let jbrowseViewState = null;
 let contigsList = [];
@@ -31,7 +31,7 @@ function initializeJBrowse2() {
 
     const { createViewState, JBrowseLinearGenomeView } = window.JBrowseReactLinearGenomeView;
 
-    // Build configuration state using standard constructor instantiation
+    // Build multi-track configuration state
     jbrowseViewState = new createViewState({
         assembly: {
             name: 'Cuminum_cyminum',
@@ -55,39 +55,56 @@ function initializeJBrowse2() {
             {
                 type: 'FeatureTrack',
                 trackId: 'cumin_gene_models',
-                name: 'Gene Models (GFF3)',
+                name: 'Gene Models & Annotations (GFF3)',
                 assemblyNames: ['Cuminum_cyminum'],
                 adapter: {
                     type: 'Gff3TabixAdapter',
-                    gffGzLocation: { 
-                        uri: '/api/genome-browser/gff',
-                        locationType: 'UriLocation'
-                    },
-                    index: { 
-                        location: {
-                            uri: '/api/genome-browser/gff-index',
-                            locationType: 'UriLocation'
-                        }
-                    }
+                    gffGzLocation: { uri: '/api/genome-browser/gff', locationType: 'UriLocation' },
+                    index: { location: { uri: '/api/genome-browser/gff-index', locationType: 'UriLocation' } }
+                }
+            },
+            {
+                type: 'FeatureTrack',
+                trackId: 'cumin_repeats',
+                name: 'EDTA Repeatmasking Results (GFF3)',
+                assemblyNames: ['Cuminum_cyminum'],
+                adapter: {
+                    type: 'Gff3TabixAdapter',
+                    gffGzLocation: { uri: '/api/genome-browser/repeats-gff', locationType: 'UriLocation' },
+                    index: { location: { uri: '/api/genome-browser/repeats-gff-index', locationType: 'UriLocation' } }
                 }
             },
             {
                 type: 'FeatureTrack',
                 trackId: 'cumin_ssrs',
-                name: 'SSR Markers (GFF3)',
+                name: 'SSR Markers & Primers (GFF3)',
                 assemblyNames: ['Cuminum_cyminum'],
                 adapter: {
                     type: 'Gff3TabixAdapter',
-                    gffGzLocation: { 
-                        uri: '/api/genome-browser/ssrs-gff',
-                        locationType: 'UriLocation'
-                    },
-                    index: { 
-                        location: {
-                            uri: '/api/genome-browser/ssrs-gff-index',
-                            locationType: 'UriLocation'
-                        }
-                    }
+                    gffGzLocation: { uri: '/api/genome-browser/ssrs-gff', locationType: 'UriLocation' },
+                    index: { location: { uri: '/api/genome-browser/ssrs-gff-index', locationType: 'UriLocation' } }
+                }
+            },
+            {
+                type: 'FeatureTrack',
+                trackId: 'cumin_mirna',
+                name: 'miRNA Target Interactions (GFF3)',
+                assemblyNames: ['Cuminum_cyminum'],
+                adapter: {
+                    type: 'Gff3TabixAdapter',
+                    gffGzLocation: { uri: '/api/genome-browser/mirna-gff', locationType: 'UriLocation' },
+                    index: { location: { uri: '/api/genome-browser/mirna-gff-index', locationType: 'UriLocation' } }
+                }
+            },
+            {
+                type: 'FeatureTrack',
+                trackId: 'cumin_sec_metabolites',
+                name: 'Secondary Metabolite Pathways (GFF3)',
+                assemblyNames: ['Cuminum_cyminum'],
+                adapter: {
+                    type: 'Gff3TabixAdapter',
+                    gffGzLocation: { uri: '/api/genome-browser/sec-metabolites-gff', locationType: 'UriLocation' },
+                    index: { location: { uri: '/api/genome-browser/sec-metabolites-gff-index', locationType: 'UriLocation' } }
                 }
             }
         ],
@@ -96,50 +113,55 @@ function initializeJBrowse2() {
             view: {
                 id: 'linearGenomeView',
                 type: 'LinearGenomeView',
-                loc: 'evm.model.jcf7180008075942.1:1-500',
+                loc: 'CcContig_000001:1-5000',
                 tracks: [
                     {
+                        id: 'cumin_gene_models',
                         type: 'FeatureTrack',
                         configuration: 'cumin_gene_models',
-                        displays: [
-                            {
-                                type: 'LinearBasicDisplay',
-                                configuration: 'cumin_gene_models-LinearBasicDisplay'
-                            }
-                        ]
+                        displays: [{ id: 'cumin_gene_models-LinearBasicDisplay', type: 'LinearBasicDisplay', configuration: 'cumin_gene_models-LinearBasicDisplay' }]
                     },
                     {
+                        id: 'cumin_repeats',
+                        type: 'FeatureTrack',
+                        configuration: 'cumin_repeats',
+                        displays: [{ id: 'cumin_repeats-LinearBasicDisplay', type: 'LinearBasicDisplay', configuration: 'cumin_repeats-LinearBasicDisplay' }]
+                    },
+                    {
+                        id: 'cumin_ssrs',
                         type: 'FeatureTrack',
                         configuration: 'cumin_ssrs',
-                        displays: [
-                            {
-                                type: 'LinearBasicDisplay',
-                                configuration: 'cumin_ssrs-LinearBasicDisplay'
-                            }
-                        ]
+                        displays: [{ id: 'cumin_ssrs-LinearBasicDisplay', type: 'LinearBasicDisplay', configuration: 'cumin_ssrs-LinearBasicDisplay' }]
+                    },
+                    {
+                        id: 'cumin_mirna',
+                        type: 'FeatureTrack',
+                        configuration: 'cumin_mirna',
+                        displays: [{ id: 'cumin_mirna-LinearBasicDisplay', type: 'LinearBasicDisplay', configuration: 'cumin_mirna-LinearBasicDisplay' }]
+                    },
+                    {
+                        id: 'cumin_sec_metabolites',
+                        type: 'FeatureTrack',
+                        configuration: 'cumin_sec_metabolites',
+                        displays: [{ id: 'cumin_sec_metabolites-LinearBasicDisplay', type: 'LinearBasicDisplay', configuration: 'cumin_sec_metabolites-LinearBasicDisplay' }]
                     }
                 ]
             }
         }
     });
 
-    // Render JBrowse 2 component using React UMD
+    // Render Component into DOM
     ReactDOM.render(
         React.createElement(JBrowseLinearGenomeView, { viewState: jbrowseViewState }),
         container
     );
 }
 
-function loadBrowserContig() {
+function navigateJBrowseContig() {
     const select = document.getElementById('browser-contig-select');
-    if (!select || !select.value || !jbrowseViewState) return;
-    
-    const contigName = select.value;
-    
-    // Navigate JBrowse 2 to selected contig coordinate range (e.g. starting 1 to 2000 bp)
-    try {
-        jbrowseViewState.session.view.navToLoc(`${contigName}:1-500`);
-    } catch (e) {
-        console.warn('JBrowse navigation error:', e);
+    if (!select || !jbrowseViewState) return;
+    const selectedContig = select.value;
+    if (selectedContig) {
+        jbrowseViewState.session.view.navigate(`${selectedContig}:1-5000`);
     }
 }

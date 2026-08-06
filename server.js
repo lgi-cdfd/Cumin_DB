@@ -331,7 +331,7 @@ app.get('/api/genome-browser/features', async (req, res) => {
             return res.json({ status: 'success', features: [] });
         }
         const genes = await dbAll('SELECT * FROM genes WHERE contig = ? ORDER BY start LIMIT 200', [contig]);
-        const ssrs = await dbAll('SELECT s.* FROM ssrs s JOIN genes g ON s.gene_id = g.gene_id WHERE g.contig = ? LIMIT 100', [contig]);
+        const ssrs = await dbAll('SELECT * FROM ssrs WHERE contig = ? LIMIT 100', [contig]);
         res.json({
             status: 'success',
             contig,
@@ -343,35 +343,53 @@ app.get('/api/genome-browser/features', async (req, res) => {
     }
 });
 
-// Serve JBrowse 2 Fasta & GFF3 Indexed Files
+// Serve JBrowse 2 Contig Assembly Fasta & Multi-Track GFF3 Indexed Files
 app.get('/api/genome-browser/fasta', (req, res) => {
-    const filePath = path.join(__dirname, 'cumin_predicted_genes.fasta');
-    res.sendFile(filePath);
+    res.sendFile(path.join(__dirname, 'cumin_ncbi_renamed.fsa'));
 });
 
 app.get('/api/genome-browser/fai', (req, res) => {
-    const filePath = path.join(__dirname, 'cumin_predicted_genes.fasta.fai');
-    res.sendFile(filePath);
+    res.sendFile(path.join(__dirname, 'cumin_ncbi_renamed.fsa.fai'));
 });
 
+// Track 1: Gene Models & Functional Annotations
 app.get('/api/genome-browser/gff', (req, res) => {
-    const filePath = path.join(__dirname, 'db', 'cumin_sorted.gff.gz');
-    res.sendFile(filePath);
+    res.sendFile(path.join(__dirname, 'db', 'cumin_genes.gff.gz'));
 });
-
 app.get('/api/genome-browser/gff-index', (req, res) => {
-    const filePath = path.join(__dirname, 'db', 'cumin_sorted.gff.gz.tbi');
-    res.sendFile(filePath);
+    res.sendFile(path.join(__dirname, 'db', 'cumin_genes.gff.gz.tbi'));
 });
 
+// Track 2: EDTA Repeatmasking Results
+app.get('/api/genome-browser/repeats-gff', (req, res) => {
+    res.sendFile(path.join(__dirname, 'db', 'cumin_repeats.gff.gz'));
+});
+app.get('/api/genome-browser/repeats-gff-index', (req, res) => {
+    res.sendFile(path.join(__dirname, 'db', 'cumin_repeats.gff.gz.tbi'));
+});
+
+// Track 3: Mined SSR Markers & PCR Primers
 app.get('/api/genome-browser/ssrs-gff', (req, res) => {
-    const filePath = path.join(__dirname, 'db', 'cumin_ssrs.gff.gz');
-    res.sendFile(filePath);
+    res.sendFile(path.join(__dirname, 'db', 'cumin_ssrs.gff.gz'));
+});
+app.get('/api/genome-browser/ssrs-gff-index', (req, res) => {
+    res.sendFile(path.join(__dirname, 'db', 'cumin_ssrs.gff.gz.tbi'));
 });
 
-app.get('/api/genome-browser/ssrs-gff-index', (req, res) => {
-    const filePath = path.join(__dirname, 'db', 'cumin_ssrs.gff.gz.tbi');
-    res.sendFile(filePath);
+// Track 4: miRNA Target Interactions (Genomically Intersected)
+app.get('/api/genome-browser/mirna-gff', (req, res) => {
+    res.sendFile(path.join(__dirname, 'db', 'cumin_mirna.gff.gz'));
+});
+app.get('/api/genome-browser/mirna-gff-index', (req, res) => {
+    res.sendFile(path.join(__dirname, 'db', 'cumin_mirna.gff.gz.tbi'));
+});
+
+// Track 5: Secondary Metabolite Biosynthetic Pathways
+app.get('/api/genome-browser/sec-metabolites-gff', (req, res) => {
+    res.sendFile(path.join(__dirname, 'db', 'cumin_sec_metabolites.gff.gz'));
+});
+app.get('/api/genome-browser/sec-metabolites-gff-index', (req, res) => {
+    res.sendFile(path.join(__dirname, 'db', 'cumin_sec_metabolites.gff.gz.tbi'));
 });
 
 // ----------------------------------------------------
