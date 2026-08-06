@@ -156,8 +156,8 @@ app.get('/api/ssrs', async (req, res) => {
         let params = [];
 
         if (search) {
-            whereClauses.push('(ssr_id LIKE ? OR gene_id LIKE ? OR motif LIKE ?)');
-            params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+            whereClauses.push('(ssr_id LIKE ? OR original_id LIKE ? OR gene_id LIKE ? OR contig LIKE ? OR motif LIKE ?)');
+            params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
         }
 
         if (ssrType) {

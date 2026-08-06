@@ -124,18 +124,25 @@ function loadSsrs(page = 1) {
                 
                 res.data.forEach(ssr => {
                     const tr = document.createElement('tr');
+                    const geneHtml = (ssr.gene_id && ssr.gene_id !== 'Intergenic')
+                        ? `<a href="#" onclick="searchGeneById('${ssr.gene_id}'); return false;" class="mono-text" style="color:var(--accent-indigo); font-weight:700;">${ssr.gene_id}</a>`
+                        : `<span style="color:var(--text-secondary); font-size:0.8rem;">Intergenic</span>`;
+                    
+                    const locBadgeClass = ssr.ssr_location === 'Genic' ? 'badge-emerald' : 'badge-indigo';
+                    
                     tr.innerHTML = `
-                        <td class="mono-text"><strong>${ssr.ssr_id}</strong></td>
-                        <td class="mono-text">${ssr.gene_id}</td>
-                        <td><span class="badge badge-emerald">${ssr.ssr_type}</span></td>
-                        <td class="mono-text" style="color:var(--accent-amber);">${ssr.motif}</td>
-                        <td><strong>${ssr.repeat_count}x</strong></td>
-                        <td class="mono-text">
+                        <td class="mono-text" title="Original Raw ID: ${ssr.original_id || ''}"><strong>${ssr.ssr_id}</strong></td>
+                        <td class="mono-text" style="font-size:0.8rem;">${ssr.contig}:${ssr.start}-${ssr.end}</td>
+                        <td>${geneHtml}</td>
+                        <td><span class="badge ${locBadgeClass}">${ssr.ssr_location || 'Genomic'}</span></td>
+                        <td><span class="badge badge-amber">${ssr.ssr_type}</span></td>
+                        <td class="mono-text"><strong>${ssr.motif}</strong> (${ssr.repeat_count}x)</td>
+                        <td class="mono-text" style="font-size:0.8rem;">
                             ${ssr.primer_forward}
                             <br><span style="font-size:0.75rem; color:var(--text-muted);">Tm: ${ssr.tm_f}°C</span>
                             <button class="copy-btn" onclick="copyText('${ssr.primer_forward}')">Copy</button>
                         </td>
-                        <td class="mono-text">
+                        <td class="mono-text" style="font-size:0.8rem;">
                             ${ssr.primer_reverse}
                             <br><span style="font-size:0.75rem; color:var(--text-muted);">Tm: ${ssr.tm_r}°C</span>
                             <button class="copy-btn" onclick="copyText('${ssr.primer_reverse}')">Copy</button>
@@ -145,11 +152,20 @@ function loadSsrs(page = 1) {
                     tbody.appendChild(tr);
                 });
 
-                document.getElementById('ssrs-pagination-info').textContent = `Page ${res.page} of ${res.total_pages} (${res.total.toLocaleString()} total markers)`;
-                document.getElementById('ssrs-prev-btn').disabled = res.page <= 1;
-                document.getElementById('ssrs-next-btn').disabled = res.page >= res.total_pages;
+                document.getElementById('ssr-pagination-info').textContent = `Page ${res.page} of ${res.total_pages} (${res.total.toLocaleString()} total markers)`;
+                document.getElementById('ssr-prev-btn').disabled = res.page <= 1;
+                document.getElementById('ssr-next-btn').disabled = res.page >= res.total_pages;
             }
         });
+}
+
+function searchGeneById(geneId) {
+    switchTab('genes');
+    const input = document.getElementById('gene-search-input');
+    if (input) {
+        input.value = geneId;
+        loadGenes(1);
+    }
 }
 
 function handleSsrSearch(e) { if (e.key === 'Enter') loadSsrs(1); }
