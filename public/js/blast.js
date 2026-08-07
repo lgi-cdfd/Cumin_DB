@@ -523,6 +523,8 @@ GATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATC`;
 // ----------------------------------------------------
 // 7. HIGH-RESOLUTION GRAPHIC PLOT EXPORT (SVG / PNG)
 // ----------------------------------------------------
+// 7. HIGH-RESOLUTION GRAPHIC PLOT EXPORT (SVG / PNG)
+// ----------------------------------------------------
 function getActivePlotSvg() {
     const ribbonWrapper = document.getElementById('blast-ribbon-plot-wrapper');
     const chordWrapper = document.getElementById('blast-chord-plot-wrapper');
@@ -538,31 +540,111 @@ function getActivePlotSvg() {
     return document.querySelector('#blast-graphic-container svg');
 }
 
-function downloadBlastPlotSVG() {
+function getSerializedActivePlotSvg() {
     const svgEl = getActivePlotSvg();
-    if (!svgEl) {
+    if (!svgEl) return null;
+
+    const clone = svgEl.cloneNode(true);
+    clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+
+    const viewBox = clone.getAttribute('viewBox');
+    let width = 900;
+    let height = 600;
+    if (viewBox) {
+        const parts = viewBox.split(/\s+/).map(Number);
+        if (parts.length === 4) {
+            width = parts[2];
+            height = parts[3];
+        }
+    }
+    clone.setAttribute('width', width);
+    clone.setAttribute('height', height);
+
+    // Inject solid white background rect
+    const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bgRect.setAttribute('width', '100%');
+    bgRect.setAttribute('height', '100%');
+    bgRect.setAttribute('fill', '#ffffff');
+    clone.insertBefore(bgRect, clone.firstChild);
+
+    // Embed CSS font definitions
+    const styleEl = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+    styleEl.textContent = `
+        text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .chord-ribbon-group path { transition: all 0.2s; }
+    `;
+    clone.insertBefore(styleEl, clone.firstChild);
+
+    const svgData = new XMLSerializer().serializeToString(clone);
+    return { svgData, width, height };
+}
+
+function downloadBlastPlotSVG() {
+    const plotData = getSerializedActivePlotSvg();
+    if (!plotData) {
         alert('No active BLAST graphic plot found to download. Please run a BLAST search first.');
         return;
     }
 
-    const svgData = new XMLSerializer().serializeToString(svgEl);
-    const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const chordWrapper = document.getElementById('blast-chord-plot-wrapper');
+    const isChord = chordWrapper && chordWrapper.style.display !== 'none';
+    const filename = isChord ? 'cumin_blast_chord_plot.svg' : 'cumin_blast_alignment_plot.svg';
+
+    const blob = new Blob([plotData.svgData], { type: 'image/svg+xml;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'cumin_blast_alignment_plot.svg';
+    a.download = filename;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
 
 function downloadBlastPlotPNG() {
-    // Download Python Matplotlib 600 DPI publication alignment plot
-    const targetUrl = 'plots/cumin_blast_alignment_plot.png';
-    const a = document.createElement('a');
-    a.href = targetUrl;
-    a.download = 'cumin_blast_alignment_plot_600dpi.png';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const plotData = getSerializedActivePlotSvg();
+    if (!plotData) {
+        alert('No active BLAST graphic plot found to download. Please run a BLAST search first.');
+        return;
+    }
+
+    const chordWrapper = document.getElementById('blast-chord-plot-wrapper');
+    const isChord = chordWrapper && chordWrapper.style.display !== 'none';
+    const filename = isChord ? 'cumin_blast_chord_plot_highres.png' : 'cumin_blast_alignment_plot_highres.png';
+
+    const scale = 2; // 2x high resolution
+    const canvas = document.createElement('canvas');
+    canvas.width = plotData.width * scale;
+    canvas.height = plotData.height * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
+
+    const img = new Image();
+    const svgBlob = new Blob([plotData.svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+
+    img.onload = function() {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, plotData.width, plotData.height);
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+
+        const pngUrl = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = pngUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
+    img.onerror = function() {
+        URL.revokeObjectURL(url);
+        alert('Failed to rasterize PNG. Downloading SVG instead.');
+        downloadBlastPlotSVG();
+    };
+
+    img.src = url;
 }
 

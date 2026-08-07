@@ -8,7 +8,7 @@
 Lakshmi Devi¹, Priyanka Kushwaha¹, Ramesh Eerapagula¹, Ankit Bhagat¹, and Dr. Ajay Kumar Mahato¹*  
 
 ¹ BRIC - Centre for DNA Fingerprinting and Diagnostics (CDFD), Hyderabad, Telangana, India.  
-*\* Corresponding author: Dr. Ajay Kumar Mahato (akmlgi2021@gmail.com)*
+*\* Corresponding author: Dr. Ajay Kumar Mahato (akmahato@cdfd.org.in / lgi@cdfd.org.in)*
 
 ---
 

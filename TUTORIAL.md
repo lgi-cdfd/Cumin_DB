@@ -195,5 +195,5 @@ If you use CuminDB datasets, primer designs, or alignment tools in your publicat
 ### Lab & Institution
 - **Laboratory**: Laboratory of Genome Informatics (LGI)
 - **Institution**: BRIC - Centre for DNA Fingerprinting and Diagnostics (CDFD), Hyderabad, Telangana 500039, India.
-- **Principal Investigator**: Dr. Ajay Kumar Mahato (`akmlgi2021@gmail.com`)
+- **Principal Investigator**: Dr. Ajay Kumar Mahato (`akmahato@cdfd.org.in` / `lgi@cdfd.org.in`)
 - **Portal URL**: [http://www.cdfd.org.in](http://www.cdfd.org.in)

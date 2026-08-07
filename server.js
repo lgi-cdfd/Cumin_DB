@@ -282,29 +282,53 @@ app.get('/api/mirna', async (req, res) => {
         const limit = parseInt(req.query.limit) || 20;
         const offset = (page - 1) * limit;
         const search = req.query.search ? req.query.search.trim() : '';
-        const mirna = req.query.mirna ? req.query.mirna.trim() : '';
+        const mirnaAcc = req.query.mirna_acc ? req.query.mirna_acc.trim() : (req.query.mirna ? req.query.mirna.trim() : '');
+        const mirbaseId = req.query.mirbase_id ? req.query.mirbase_id.trim() : '';
+        const targetGene = req.query.target_gene ? req.query.target_gene.trim() : '';
+        const expectation = (req.query.expectation !== undefined && req.query.expectation !== '') ? parseFloat(req.query.expectation) : null;
+        const inhibition = req.query.inhibition ? req.query.inhibition.trim() : '';
         const format = req.query.format || 'json';
 
         let whereClauses = [];
         let params = [];
 
         if (search) {
-            whereClauses.push('(mirna_acc LIKE ? OR target_gene LIKE ? OR target_desc LIKE ?)');
-            params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+            whereClauses.push('(mirna_acc LIKE ? OR mirbase_id LIKE ? OR target_gene LIKE ? OR target_desc LIKE ?)');
+            params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
         }
 
-        if (mirna) {
-            whereClauses.push('mirna_acc = ?');
-            params.push(mirna);
+        if (mirnaAcc) {
+            whereClauses.push('mirna_acc LIKE ?');
+            params.push(`%${mirnaAcc}%`);
+        }
+
+        if (mirbaseId) {
+            whereClauses.push('mirbase_id LIKE ?');
+            params.push(`%${mirbaseId}%`);
+        }
+
+        if (targetGene) {
+            whereClauses.push('target_gene LIKE ?');
+            params.push(`%${targetGene}%`);
+        }
+
+        if (expectation !== null && !isNaN(expectation)) {
+            whereClauses.push('expectation = ?');
+            params.push(expectation);
+        }
+
+        if (inhibition) {
+            whereClauses.push('inhibition = ?');
+            params.push(inhibition);
         }
 
         const whereSql = whereClauses.length > 0 ? 'WHERE ' + whereClauses.join(' AND ') : '';
 
         if (format === 'csv') {
-            const allRows = await dbAll(`SELECT * FROM mirna_targets ${whereSql} ORDER BY expectation ASC, mirna_acc LIMIT 5000`, params);
+            const allRows = await dbAll(`SELECT mirna_acc, mirbase_id, target_gene, expectation, upe, mirna_start, mirna_end, target_start, target_end, mirna_aligned, target_aligned, inhibition, target_desc, mirbase_url FROM mirna_targets ${whereSql} ORDER BY expectation ASC, mirna_acc LIMIT 10000`, params);
             res.setHeader('Content-Type', 'text/csv');
             res.setHeader('Content-Disposition', 'attachment; filename="cumin_mirna_targets_export.csv"');
-            if (allRows.length === 0) return res.send('mirna_acc,mirbase_id,target_gene,expectation,inhibition,mirbase_url\n');
+            if (allRows.length === 0) return res.send('mirna_acc,mirbase_id,target_gene,expectation,upe,mirna_start,mirna_end,target_start,target_end,mirna_aligned,target_aligned,inhibition,target_desc,mirbase_url\n');
             const headers = Object.keys(allRows[0]).join(',');
             const csvLines = allRows.map(row => Object.values(row).map(v => `"${String(v || '').replace(/"/g, '""')}"`).join(','));
             return res.send([headers, ...csvLines].join('\n'));

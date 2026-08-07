@@ -560,17 +560,32 @@ def main():
     if os.path.exists(psrna_path):
         with open(psrna_path, 'r', encoding='utf-8', errors='ignore') as f:
             for line in f:
-                if line.startswith('#') or not line.strip(): continue
+                if line.startswith('#') or line.startswith('miRNA_Acc') or not line.strip(): continue
                 parts = line.strip().split('\t')
-                if len(parts) >= 10:
+                if len(parts) >= 11:
                     mirna_acc = parts[0].strip()
                     target_gid_old = parts[1].strip()
                     target_gid_new = gene_map.get(target_gid_old, target_gid_old)
-                    expect = float(parts[2]) if parts[2].replace('.','',1).isdigit() else 3.0
-                    inhibition = parts[10].strip() if len(parts) > 10 else "Cleavage"
                     
-                    t_start = int(parts[7]) if parts[7].isdigit() else 1
-                    t_end = int(parts[8]) if parts[8].isdigit() else 20
+                    try:
+                        expect = float(parts[2].strip())
+                    except ValueError:
+                        expect = 3.0
+
+                    try:
+                        upe = float(parts[3].strip())
+                    except ValueError:
+                        upe = -1.0
+
+                    m_start = int(parts[4]) if parts[4].isdigit() else 1
+                    m_end = int(parts[5]) if parts[5].isdigit() else 20
+                    t_start = int(parts[6]) if parts[6].isdigit() else 1
+                    t_end = int(parts[7]) if parts[7].isdigit() else 20
+                    
+                    mirna_seq = parts[8].strip()
+                    target_seq = parts[9].strip()
+                    inhibition = parts[10].strip()
+                    target_desc = parts[11].strip() if len(parts) > 11 else f"Target site on {target_gid_new}"
 
                     maccession = get_mirbase_accession(mirna_acc)
                     if maccession:
@@ -603,13 +618,17 @@ def main():
                         'mirbase_id': mb_id,
                         'target_gene': target_gid_new,
                         'expectation': expect,
-                        'upe': 0.0,
+                        'upe': upe,
+                        'mirna_start': m_start,
+                        'mirna_end': m_end,
                         'target_start': t_start,
                         'target_end': t_end,
+                        'mirna_aligned': mirna_seq,
+                        'target_aligned': target_seq,
                         'genomic_start': genomic_start,
                         'genomic_end': genomic_end,
                         'inhibition': inhibition,
-                        'target_desc': f"Target site on {target_gid_new}",
+                        'target_desc': target_desc,
                         'mirbase_url': mb_url
                     })
 
@@ -739,6 +758,15 @@ def main():
         tair_url TEXT
     )
     """)
+    VALID_PLANTTFDB_FAMILIES = {
+        'AP2', 'ARF', 'ARR-B', 'B3', 'BBR-BPC', 'BES1', 'C2H2', 'C3H', 'CAMTA', 'CO-like', 
+        'CPP', 'DBB', 'Dof', 'E2F/DP', 'EIL', 'ERF', 'FAR1', 'G2-like', 'GATA', 'GRAS', 
+        'GRF', 'GeBP', 'HB-PHD', 'HB-other', 'HD-ZIP', 'HRT-like', 'HSF', 'LBD', 'LFY', 
+        'LSD', 'M-type_MADS', 'MIKC_MADS', 'MYB', 'MYB_related', 'NAC', 'NF-X1', 'NF-YA', 
+        'NF-YB', 'NF-YC', 'NZZ/SPL', 'Nin-like', 'RAV', 'S1Fa-like', 'SAP', 'SBP', 
+        'SRS', 'STAT', 'TALE', 'TCP', 'Trihelix', 'VOZ', 'WOX', 'WRKY', 'Whirly', 
+        'YABBY', 'ZF-HD', 'bHLH', 'bZIP'
+    }
     tf_tuples = []
     if os.path.exists(tf_txt):
         with open(tf_txt, 'r', encoding='utf-8', errors='ignore') as f:
@@ -746,9 +774,11 @@ def main():
                 if line.startswith('#') or not line.strip(): continue
                 parts = line.strip().split('\t')
                 if len(parts) >= 3:
+                    family = parts[1].strip()
+                    if family not in VALID_PLANTTFDB_FAMILIES or family.startswith('CcGene'):
+                        continue
                     old_gid = parts[0].strip()
                     new_gid = gene_map.get(old_gid, old_gid)
-                    family = parts[1].strip()
                     ath = parts[2].strip()
                     locus = ath.split('.')[0]
                     tf_tuples.append((new_gid, family, ath, locus, "1e-10", f"Arabidopsis ortholog {ath}", f"https://www.arabidopsis.org/servlets/TairObject?type=locus&name={locus}"))
@@ -763,8 +793,12 @@ def main():
         target_gene TEXT,
         expectation REAL,
         upe REAL,
+        mirna_start INTEGER,
+        mirna_end INTEGER,
         target_start INTEGER,
         target_end INTEGER,
+        mirna_aligned TEXT,
+        target_aligned TEXT,
         genomic_start INTEGER,
         genomic_end INTEGER,
         inhibition TEXT,
@@ -772,8 +806,22 @@ def main():
         mirbase_url TEXT
     )
     """)
-    mirna_tuples = [(m['mirna_acc'], m['mirbase_id'], m['target_gene'], m['expectation'], m['upe'], m['target_start'], m['target_end'], m['genomic_start'], m['genomic_end'], m['inhibition'], m['target_desc'], m['mirbase_url']) for m in parsed_mirna_db]
-    cur.executemany("INSERT INTO mirna_targets (mirna_acc, mirbase_id, target_gene, expectation, upe, target_start, target_end, genomic_start, genomic_end, inhibition, target_desc, mirbase_url) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", mirna_tuples)
+    mirna_tuples = [
+        (
+            m['mirna_acc'], m['mirbase_id'], m['target_gene'], m['expectation'], m['upe'],
+            m['mirna_start'], m['mirna_end'], m['target_start'], m['target_end'],
+            m['mirna_aligned'], m['target_aligned'], m['genomic_start'], m['genomic_end'],
+            m['inhibition'], m['target_desc'], m['mirbase_url']
+        ) for m in parsed_mirna_db
+    ]
+    cur.executemany("""
+        INSERT INTO mirna_targets (
+            mirna_acc, mirbase_id, target_gene, expectation, upe,
+            mirna_start, mirna_end, target_start, target_end,
+            mirna_aligned, target_aligned, genomic_start, genomic_end,
+            inhibition, target_desc, mirbase_url
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    """, mirna_tuples)
 
     # Table 5: secondary_metabolites
     cur.execute("""

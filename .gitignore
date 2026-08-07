@@ -46,3 +46,7 @@ Ramesh.jpeg
 
 # JBrowse Config Build Output
 jbrowse2/config.json
+
+# Deployment Packages & Archives
+CuminDB_Deployment_Package/
+CuminDB_Deployment_Package.tar.gz

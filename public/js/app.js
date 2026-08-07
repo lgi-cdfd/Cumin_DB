@@ -331,7 +331,7 @@ function loadSsrs(page = 1) {
                     const tr = document.createElement('tr');
                     const geneHtml = (ssr.gene_id && ssr.gene_id !== 'Intergenic')
                         ? `<a href="#" onclick="searchGeneById('${ssr.gene_id}'); return false;" class="mono-text" style="color:var(--accent-indigo); font-weight:700;">${ssr.gene_id}</a>`
-                        : `<span style="color:var(--text-secondary); font-size:0.8rem;">Intergenic</span>`;
+                        : `<span style="color:var(--text-muted); font-weight:600; padding-left:12px;">-</span>`;
                     
                     let locBadge = `<span class="badge" style="background:#f1f5f9; color:#475569;">Intergenic</span>`;
                     if (ssr.ssr_location === 'Coding (CDS)') {
@@ -352,12 +352,12 @@ function loadSsrs(page = 1) {
                         <td class="mono-text" style="font-size:0.8rem;">
                             ${ssr.primer_forward}
                             <br><span style="font-size:0.75rem; color:var(--text-muted);">Tm: ${ssr.tm_f}°C</span>
-                            <button class="copy-btn" onclick="copyText('${ssr.primer_forward}')">Copy</button>
+                            <button class="copy-btn" onclick="copyText('${ssr.primer_forward}', this)">Copy</button>
                         </td>
                         <td class="mono-text" style="font-size:0.8rem;">
                             ${ssr.primer_reverse}
                             <br><span style="font-size:0.75rem; color:var(--text-muted);">Tm: ${ssr.tm_r}°C</span>
-                            <button class="copy-btn" onclick="copyText('${ssr.primer_reverse}')">Copy</button>
+                            <button class="copy-btn" onclick="copyText('${ssr.primer_reverse}', this)">Copy</button>
                         </td>
                         <td><strong>${ssr.product_size} bp</strong></td>
                     `;
@@ -450,32 +450,72 @@ function nextTfPage() { loadTfs(currentTfPage + 1); }
 // ----------------------------------------------------
 function loadMirna(page = 1) {
     currentMirnaPage = page;
-    const limit = document.getElementById('mirna-limit-select').value;
-    const search = document.getElementById('mirna-search-input').value;
+    const limit = document.getElementById('mirna-limit-select') ? document.getElementById('mirna-limit-select').value : 20;
+    const mirnaAcc = document.getElementById('mirna-acc-input') ? document.getElementById('mirna-acc-input').value.trim() : '';
+    const mirbaseId = document.getElementById('mirna-mirbase-input') ? document.getElementById('mirna-mirbase-input').value.trim() : '';
+    const targetGene = document.getElementById('mirna-gene-input') ? document.getElementById('mirna-gene-input').value.trim() : '';
+    const expectSelect = document.getElementById('mirna-expect-select');
+    const expect = expectSelect ? expectSelect.value : '';
+    const inhibSelect = document.getElementById('mirna-inhibition-select');
+    const inhibition = inhibSelect ? inhibSelect.value : '';
     
     const tbody = document.getElementById('mirna-table-body');
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">Loading miRNA targets...</td></tr>';
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:30px;">Loading miRNA targets...</td></tr>';
     
-    fetch(`/api/mirna?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`)
+    const queryParams = new URLSearchParams({
+        page: page,
+        limit: limit,
+        mirna_acc: mirnaAcc,
+        mirbase_id: mirbaseId,
+        target_gene: targetGene,
+        expectation: expect,
+        inhibition: inhibition
+    });
+
+    fetch(`/api/mirna?${queryParams.toString()}`)
         .then(res => res.json())
         .then(res => {
             if (res.status === 'success') {
                 tbody.innerHTML = '';
                 if (res.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">No matching miRNA targets found.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:30px;">No matching miRNA targets found.</td></tr>';
                     return;
                 }
                 
                 res.data.forEach(m => {
                     const tr = document.createElement('tr');
+                    
+                    const expVal = Number(m.expectation);
+                    const expectLabel = (expVal % 1 === 0) ? expVal.toFixed(1) : String(expVal);
+                    
+                    let expectBadgeClass = 'badge-emerald';
+                    if (expVal > 3.5) expectBadgeClass = 'badge-secondary';
+                    else if (expVal > 2.5) expectBadgeClass = 'badge-amber';
+                    else if (expVal > 1.0) expectBadgeClass = 'badge-indigo';
+
+                    const geneLink = (m.target_gene && m.target_gene.startsWith('CcGene'))
+                        ? `<a href="#" onclick="searchGeneById('${m.target_gene}'); return false;" class="mono-text" style="color:var(--accent-indigo); font-weight:700;">${m.target_gene}</a>`
+                        : `<span class="mono-text">${m.target_gene || '-'}</span>`;
+
+                    const duplexHtml = (m.mirna_aligned && m.target_aligned)
+                        ? `<div style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; line-height:1.3; white-space:nowrap; background:#f8fafc; padding:4px 8px; border-radius:4px; border:1px solid #e2e8f0;">
+                             <span style="color:#0284c7; font-weight:600;">m:</span> ${m.mirna_aligned}<br>
+                             <span style="color:#059669; font-weight:600;">t:</span> ${m.target_aligned}
+                           </div>`
+                        : '-';
+
                     tr.innerHTML = `
                         <td class="mono-text"><strong>${m.mirna_acc}</strong></td>
                         <td class="mono-text">${m.mirbase_id}</td>
-                        <td class="mono-text">${m.target_gene}</td>
-                        <td class="mono-text" style="color:var(--accent-emerald);">${m.expectation}</td>
-                        <td><span class="badge ${m.inhibition === 'Cleavage' ? 'badge-emerald' : 'badge-amber'}">${m.inhibition}</span></td>
-                        <td class="mono-text" style="font-size:0.75rem;">${m.target_aligned ? m.target_aligned.substring(0, 30) + '...' : '-'}</td>
-                        <td><a href="${m.mirbase_url}" target="_blank" class="external-link" title="Open official miRBase Accession ${m.mirbase_id}">${m.mirbase_id}</a></td>
+                        <td>${geneLink}</td>
+                        <td><span class="badge ${expectBadgeClass}">${expectLabel}</span></td>
+                        <td class="mono-text" style="font-size:0.8rem;">${m.upe !== undefined && m.upe !== null ? m.upe : '-1.0'}</td>
+                        <td class="mono-text" style="font-size:0.8rem;">${m.mirna_start || 1} - ${m.mirna_end || 20}</td>
+                        <td class="mono-text" style="font-size:0.8rem;">${m.target_start} - ${m.target_end}</td>
+                        <td>${duplexHtml}</td>
+                        <td><span class="badge ${m.inhibition === 'Cleavage' ? 'badge-emerald' : 'badge-amber'}">${m.inhibition || 'Cleavage'}</span></td>
+                        <td><a href="${m.mirbase_url}" target="_blank" class="external-link" title="Open official miRBase ${m.mirbase_id}">miRBase Link</a></td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -487,14 +527,72 @@ function loadMirna(page = 1) {
         });
 }
 
+function clearMirnaFilters() {
+    if (document.getElementById('mirna-acc-input')) document.getElementById('mirna-acc-input').value = '';
+    if (document.getElementById('mirna-mirbase-input')) document.getElementById('mirna-mirbase-input').value = '';
+    if (document.getElementById('mirna-gene-input')) document.getElementById('mirna-gene-input').value = '';
+    if (document.getElementById('mirna-expect-select')) document.getElementById('mirna-expect-select').value = '';
+    if (document.getElementById('mirna-inhibition-select')) document.getElementById('mirna-inhibition-select').value = '';
+    loadMirna(1);
+}
+
 function handleMirnaSearch(e) { if (e.key === 'Enter') loadMirna(1); }
 function prevMirnaPage() { if (currentMirnaPage > 1) loadMirna(currentMirnaPage - 1); }
 function nextMirnaPage() { loadMirna(currentMirnaPage + 1); }
 
 // Helper Utilities
-function copyText(text) {
-    navigator.clipboard.writeText(text);
-    alert('Copied primer sequence to clipboard: ' + text);
+function copyText(text, btnElement) {
+    if (!text) return;
+
+    function showSuccessFeedback() {
+        if (btnElement && btnElement.innerText !== undefined) {
+            const originalText = btnElement.innerText;
+            const originalBg = btnElement.style.background;
+            const originalColor = btnElement.style.color;
+
+            btnElement.innerText = 'Copied!';
+            btnElement.style.background = '#10b981';
+            btnElement.style.color = '#ffffff';
+
+            setTimeout(() => {
+                btnElement.innerText = originalText;
+                btnElement.style.background = originalBg;
+                btnElement.style.color = originalColor;
+            }, 1500);
+        }
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            showSuccessFeedback();
+        }).catch(() => {
+            fallbackCopyTextToClipboard(text, showSuccessFeedback);
+        });
+    } else {
+        fallbackCopyTextToClipboard(text, showSuccessFeedback);
+    }
+}
+
+function fallbackCopyTextToClipboard(text, callback) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+        const successful = document.execCommand('copy');
+        if (successful && callback) callback();
+    } catch (err) {
+        console.error('Fallback copy failed:', err);
+    }
+
+    document.body.removeChild(textArea);
 }
 
 function exportData(type) {
@@ -503,6 +601,13 @@ function exportData(type) {
         const geneId = document.getElementById('ssr-gene-input') ? document.getElementById('ssr-gene-input').value.trim() : '';
         const ssrType = document.getElementById('ssr-type-select') ? document.getElementById('ssr-type-select').value : '';
         window.location.href = `/api/ssrs?format=csv&motif=${encodeURIComponent(motif)}&gene_id=${encodeURIComponent(geneId)}&type=${encodeURIComponent(ssrType)}`;
+    } else if (type === 'mirna') {
+        const mirnaAcc = document.getElementById('mirna-acc-input') ? document.getElementById('mirna-acc-input').value.trim() : '';
+        const mirbaseId = document.getElementById('mirna-mirbase-input') ? document.getElementById('mirna-mirbase-input').value.trim() : '';
+        const targetGene = document.getElementById('mirna-gene-input') ? document.getElementById('mirna-gene-input').value.trim() : '';
+        const expect = document.getElementById('mirna-expect-select') ? document.getElementById('mirna-expect-select').value : '';
+        const inhibition = document.getElementById('mirna-inhibition-select') ? document.getElementById('mirna-inhibition-select').value : '';
+        window.location.href = `/api/mirna?format=csv&mirna_acc=${encodeURIComponent(mirnaAcc)}&mirbase_id=${encodeURIComponent(mirbaseId)}&target_gene=${encodeURIComponent(targetGene)}&expectation=${encodeURIComponent(expect)}&inhibition=${encodeURIComponent(inhibition)}`;
     } else {
         window.location.href = `/api/${type}?format=csv`;
     }
@@ -546,7 +651,7 @@ function showFooterModal(type) {
                 <div id="citation-text" style="background: var(--bg-card-hover); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-primary); line-height: 1.5; margin-bottom: 16px; word-break: break-all;">
 Ajay Kumar Mahato, Lakshmi Devi, Priyanka Kushwaha, Ramesh Eerapagula, Ankit Bhagat. CuminDB: An Interactive Genomic and Functional Annotation Database for Cuminum cyminum L. Scientific Data (2026).
                 </div>
-                <button class="btn btn-primary" onclick="copyCitationText()">Copy Citation to Clipboard</button>
+                <button class="btn btn-primary" onclick="copyCitationText(this)">Copy Citation to Clipboard</button>
             </div>
         `;
     }
@@ -561,11 +666,10 @@ function closeFooterModal() {
     }
 }
 
-function copyCitationText() {
+function copyCitationText(btnElement) {
     const citeDiv = document.getElementById('citation-text');
     if (citeDiv) {
-        navigator.clipboard.writeText(citeDiv.textContent.trim());
-        alert('Citation copied to clipboard!');
+        copyText(citeDiv.textContent.trim(), btnElement);
     }
 }
 
@@ -590,7 +694,7 @@ function tutorialSearch(tab, query, selectId, selectVal) {
         if (input) input.value = query || '';
         loadSecMetabolites(1);
     } else if (tab === 'ssrs') {
-        const input = document.getElementById('ssr-search-input');
+        const input = document.getElementById('ssr-motif-input');
         if (input) input.value = query || '';
         loadSsrs(1);
     } else if (tab === 'tfs') {

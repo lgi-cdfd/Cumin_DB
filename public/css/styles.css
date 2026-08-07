@@ -821,6 +821,7 @@ a.external-link:hover {
     position: sticky;
     top: 60px;
     z-index: 100;
+    justify-content: center;
 }
 
 .tutorial-nav-pill {
@@ -910,14 +911,18 @@ a.external-link:hover {
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
+    text-align: center;
+    align-items: center;
 }
 
 .step-card-header {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     margin-bottom: 10px;
+    width: 100%;
 }
 
 .step-number {
@@ -938,6 +943,7 @@ a.external-link:hover {
     font-size: 1rem;
     font-weight: 700;
     color: #0f172a;
+    text-align: center;
 }
 
 .step-card-desc {
@@ -945,14 +951,18 @@ a.external-link:hover {
     color: #475569;
     line-height: 1.55;
     margin-bottom: 14px;
+    text-align: center;
 }
 
 .step-bullets {
     font-size: 0.84rem;
     color: #334155;
     padding-left: 18px;
-    margin-bottom: 16px;
+    margin: 0 auto 16px;
     line-height: 1.6;
+    text-align: left;
+    display: inline-block;
+    width: fit-content;
 }
 
 .tutorial-action-bar {
@@ -962,6 +972,8 @@ a.external-link:hover {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
 }
 
 .btn-try-example {

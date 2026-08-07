@@ -251,7 +251,7 @@ window.renderCharts = function(tfDist, ssrDist, mirnaDist, secMetabDist) {
                         const index = activeElements[0].index;
                         const cat = labels[index];
                         switchTab('sec-metabolites');
-                        const select = document.getElementById('sec-metab-category-select');
+                        const select = document.getElementById('sec-cat-select');
                         if (select) {
                             select.value = cat;
                             loadSecMetabolites(1);

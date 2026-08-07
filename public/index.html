@@ -428,13 +428,42 @@
                     <button class="btn btn-success" onclick="exportData('mirna')">Export CSV</button>
                 </div>
 
-                <div class="controls-bar">
-                    <div class="search-group">
-                        <input type="text" id="mirna-search-input" class="input-field" placeholder="Search miRNA accession or target gene..." onkeyup="handleMirnaSearch(event)">
+                <div class="controls-bar" style="flex-wrap: wrap; gap: 12px 18px;">
+                    <div class="search-group" style="flex-wrap: wrap; gap: 10px;">
+                        <input type="text" id="mirna-acc-input" class="input-field" style="width: 170px;" placeholder="miRNA Accession..." onkeyup="handleMirnaSearch(event)">
+                        <input type="text" id="mirna-mirbase-input" class="input-field" style="width: 150px;" placeholder="miRBase ID..." onkeyup="handleMirnaSearch(event)">
+                        <input type="text" id="mirna-gene-input" class="input-field" style="width: 150px;" placeholder="Target Gene ID..." onkeyup="handleMirnaSearch(event)">
                         <button class="btn btn-primary" onclick="loadMirna(1)">Search</button>
+                        <button class="btn" onclick="clearMirnaFilters()" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;">Clear</button>
                     </div>
 
-                    <div style="display: flex; gap: 14px; align-items: center;">
+                    <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+                        <label for="mirna-expect-select" style="font-size: 0.88rem; color: var(--text-secondary);">Expectation:</label>
+                        <select id="mirna-expect-select" class="input-field" style="width: 150px;" onchange="loadMirna(1)">
+                            <option value="">All Expectations</option>
+                            <option value="0.0">0.0</option>
+                            <option value="0.5">0.5</option>
+                            <option value="1.0">1.0</option>
+                            <option value="1.5">1.5</option>
+                            <option value="2.0">2.0</option>
+                            <option value="2.5">2.5</option>
+                            <option value="3.0">3.0</option>
+                            <option value="3.5">3.5</option>
+                            <option value="3.75">3.75</option>
+                            <option value="4.0">4.0</option>
+                            <option value="4.25">4.25</option>
+                            <option value="4.5">4.5</option>
+                            <option value="4.75">4.75</option>
+                            <option value="5.0">5.0</option>
+                        </select>
+
+                        <label for="mirna-inhibition-select" style="font-size: 0.88rem; color: var(--text-secondary);">Inhibition:</label>
+                        <select id="mirna-inhibition-select" class="input-field" style="width: 140px;" onchange="loadMirna(1)">
+                            <option value="">All Modes</option>
+                            <option value="Cleavage">Cleavage</option>
+                            <option value="Translation">Translation</option>
+                        </select>
+
                         <label for="mirna-limit-select" style="font-size: 0.88rem; color: var(--text-secondary);">Rows:</label>
                         <select id="mirna-limit-select" class="input-field" style="width: 90px;" onchange="loadMirna(1)">
                             <option value="10">10</option>
@@ -453,13 +482,16 @@
                                 <th>miRBase ID</th>
                                 <th>Target Gene ID</th>
                                 <th>Expectation</th>
-                                <th>Mechanism</th>
-                                <th>Target Alignment</th>
+                                <th>UPE</th>
+                                <th>miRNA Region</th>
+                                <th>Target Region</th>
+                                <th>Duplex Alignment</th>
+                                <th>Inhibition</th>
                                 <th>miRBase Link</th>
                             </tr>
                         </thead>
                         <tbody id="mirna-table-body">
-                            <tr><td colspan="7" style="text-align:center; padding:30px;">Loading miRNA target interactions...</td></tr>
+                            <tr><td colspan="10" style="text-align:center; padding:30px;">Loading miRNA target interactions...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -703,7 +735,7 @@
                                 </div>
                                 <div>
                                     <span style="font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-right: 6px;">Lab Email:</span>
-                                    <code style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 6px; font-size: 0.84rem; color: #0f172a; font-weight: 600;">akmlgi2021@gmail.com</code>
+                                    <code style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 6px; font-size: 0.84rem; color: #0f172a; font-weight: 600;">lgi@cdfd.org.in</code>
                                 </div>
                             </div>
                         </div>
@@ -778,7 +810,7 @@
                         <div class="contact-item">
                             <strong>Official Email & Inquiries</strong>
                             <p style="margin-top: 4px; line-height: 1.5;">
-                                Head Email: <code>akmahato@cdfd.org.in</code> / <code>akmlgi2021@gmail.com</code><br>
+                                Head Email: <code>akmahato@cdfd.org.in</code> / <code>lgi@cdfd.org.in</code><br>
                                 Response Window: 1-2 business days for data queries and collaborative requests.
                             </p>
                         </div>
@@ -948,6 +980,9 @@
                             <div class="step-card-desc">
                                 Click the <strong>View</strong> button on any row or click the Gene ID hyperlink to open the full annotation modal containing exact genomic coordinates, full GO term descriptions, and InterPro domain names.
                             </div>
+                            <div class="tutorial-action-bar">
+                                <button class="btn-try-example" onclick="openGeneModal('CcGene_00001')">Open Sample Gene Modal</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -992,6 +1027,9 @@
                             </div>
                             <div class="step-card-desc">
                                 Click hyperlinked <span class="badge badge-amber">KEGG Map IDs</span> (e.g., <code>map00900</code>) to launch official Kyoto Encyclopedia of Genes and Genomes interactive pathway diagrams in a new browser tab.
+                            </div>
+                            <div class="tutorial-action-bar">
+                                <button class="btn-try-example" onclick="window.open('https://www.kegg.jp/kegg-bin/show_pathway?map00900', '_blank')">Preview KEGG map00900</button>
                             </div>
                         </div>
                     </div>
@@ -1086,6 +1124,9 @@
                             <div class="step-card-desc">
                                 View best-hit <em>Arabidopsis thaliana</em> locus IDs, BLAST alignment E-values, and click <strong>TAIR Accession</strong> hyperlinks to study functional orthology.
                             </div>
+                            <div class="tutorial-action-bar">
+                                <button class="btn-try-example" onclick="window.open('https://www.arabidopsis.org/servlets/TairObject?type=locus&name=AT4G23980', '_blank')">Preview TAIR AT4G23980</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1131,6 +1172,9 @@
                             <div class="step-card-desc">
                                 Click hyperlinked <strong>miRBase ID</strong> tags to open official miRBase precursor hairpin structures and sequence mature arm annotations.
                             </div>
+                            <div class="tutorial-action-bar">
+                                <button class="btn-try-example" onclick="window.open('https://www.mirbase.org/hairpin/MI0000171', '_blank')">Preview miRBase Hairpin</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1171,6 +1215,9 @@
                             </div>
                             <div class="step-card-desc">
                                 In BLAST search results, click <strong>View in JBrowse 2</strong> to jump straight to the exact contig coordinates and view GFF3 gene tracks in the embedded JBrowse 2 viewer.
+                            </div>
+                            <div class="tutorial-action-bar">
+                                <button class="btn-try-example" onclick="switchTab('browser')">Launch JBrowse 2 Viewer</button>
                             </div>
                         </div>
                     </div>
@@ -1248,7 +1295,7 @@ ATGGCCACCACCATGCAAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAG</pre>
                                 <span style="font-size:1.1rem; color:#64748b;">&#9660;</span>
                             </div>
                             <div class="faq-answer">
-                                CuminDB is developed and maintained by the <strong>Laboratory of Genome Informatics (LGI)</strong> at the <strong>BRIC - Centre for DNA Fingerprinting and Diagnostics (CDFD)</strong>, Hyderabad, India. For inquiries or collaboration, contact Dr. Ajay Kumar Mahato at <code>akmlgi2021@gmail.com</code> or view the <strong>Contact</strong> tab.
+                                CuminDB is developed and maintained by the <strong>Laboratory of Genome Informatics (LGI)</strong> at the <strong>BRIC - Centre for DNA Fingerprinting and Diagnostics (CDFD)</strong>, Hyderabad, India. For inquiries or collaboration, contact Dr. Ajay Kumar Mahato at <code>lgi@cdfd.org.in</code> or view the <strong>Contact</strong> tab.
                             </div>
                         </div>
 

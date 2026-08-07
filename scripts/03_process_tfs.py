@@ -12,6 +12,16 @@ from collections import Counter
 
 def parse_tf_list(tf_path):
     print(f"[*] Parsing TF list file: {tf_path}")
+    VALID_PLANTTFDB_FAMILIES = {
+        'AP2', 'ARF', 'ARR-B', 'B3', 'BBR-BPC', 'BES1', 'C2H2', 'C3H', 'CAMTA', 'CO-like', 
+        'CPP', 'DBB', 'Dof', 'E2F/DP', 'EIL', 'ERF', 'FAR1', 'G2-like', 'GATA', 'GRAS', 
+        'GRF', 'GeBP', 'HB-PHD', 'HB-other', 'HD-ZIP', 'HRT-like', 'HSF', 'LBD', 'LFY', 
+        'LSD', 'M-type_MADS', 'MIKC_MADS', 'MYB', 'MYB_related', 'NAC', 'NF-X1', 'NF-YA', 
+        'NF-YB', 'NF-YC', 'NZZ/SPL', 'Nin-like', 'RAV', 'S1Fa-like', 'SAP', 'SBP', 
+        'SRS', 'STAT', 'TALE', 'TCP', 'Trihelix', 'VOZ', 'WOX', 'WRKY', 'Whirly', 
+        'YABBY', 'ZF-HD', 'bHLH', 'bZIP'
+    }
+
     tfs = []
     family_counts = Counter()
     
@@ -28,8 +38,10 @@ def parse_tf_list(tf_path):
                 evalue = parts[3].strip()
                 description = parts[4].strip()
                 
-                # Format TAIR hyperlink URL
-                # Example accession: AT1G13260.1 -> gene locus: AT1G13260
+                # Enforce PlantTFDB official TF family validation
+                if tf_family not in VALID_PLANTTFDB_FAMILIES or tf_family.startswith('CcGene'):
+                    continue
+
                 locus = ath_hit.split('.')[0] if '.' in ath_hit else ath_hit
                 tair_url = f"https://www.arabidopsis.org/servlets/Search?type=general&search_action=detail&method=1&sub_type=gene&name={locus}"
                 
@@ -46,7 +58,7 @@ def parse_tf_list(tf_path):
                 family_counts[tf_family] += 1
                 
     print(f"[+] Total TFs parsed: {len(tfs)}")
-    print(f"[+] Total TF families identified: {len(family_counts)}")
+    print(f"[+] Total PlantTFDB TF families identified: {len(family_counts)}")
     return tfs, dict(family_counts)
 
 if __name__ == '__main__':

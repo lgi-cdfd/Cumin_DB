@@ -15,7 +15,7 @@ Developed and maintained by the **Laboratory of Genome Informatics (LGI)** at th
 
 ## Authors & Laboratory Information
 
-- **Dr. Ajay Kumar Mahato** (`akmahato@cdfd.org.in` / `akmlgi2021@gmail.com`) — *Principal Investigator & Corresponding Author*
+- **Dr. Ajay Kumar Mahato** (`akmahato@cdfd.org.in` / `lgi@cdfd.org.in`) — *Principal Investigator & Corresponding Author*
 - **Ramesh Eerapagula** (`rameshe@cdfd.org.in`) — *Research Scholar*
 - **Lakshmi Devi** (`lakshmidevi@cdfd.org.in`) — *Research Scholar*
 - **Priyanka Kushwaha** (`priyankakushwaha@cdfd.org.in`) — *Research Scholar*
@@ -136,4 +136,8 @@ CuminDB: An Integrated Computational Genomics Portal for Cuminum cyminum L.
 Scientific Data (2026).
 ```
 
-Distributed under the **Creative Commons Attribution 4.0 International (CC BY 4.0)** license.
+### Licenses
+- **Data & Genomic Annotations**: Released under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) license.
+- **Source Code & Web Application Engine**: Released under the [MIT License](LICENSE).
+
+See the [LICENSE](LICENSE) file for complete details.
