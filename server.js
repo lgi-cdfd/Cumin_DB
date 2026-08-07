@@ -458,11 +458,19 @@ app.get('/api/genome-browser/features', async (req, res) => {
 
 // Serve JBrowse 2 Contig Assembly Fasta & Multi-Track GFF3 Indexed Files
 app.get('/api/genome-browser/fasta', (req, res) => {
-    res.sendFile(path.join(__dirname, 'cumin_ncbi_renamed.fsa'));
+    const fastaPath = path.join(__dirname, 'cumin_ncbi_renamed.fsa');
+    if (!fs.existsSync(fastaPath)) {
+        return res.status(404).send('Reference assembly FASTA file (cumin_ncbi_renamed.fsa) missing on server.');
+    }
+    res.sendFile(fastaPath);
 });
 
 app.get('/api/genome-browser/fai', (req, res) => {
-    res.sendFile(path.join(__dirname, 'cumin_ncbi_renamed.fsa.fai'));
+    const faiPath = path.join(__dirname, 'cumin_ncbi_renamed.fsa.fai');
+    if (!fs.existsSync(faiPath)) {
+        return res.status(404).send('Reference assembly FAI index file (cumin_ncbi_renamed.fsa.fai) missing on server.');
+    }
+    res.sendFile(faiPath);
 });
 
 // Track 1: Gene Models & Functional Annotations

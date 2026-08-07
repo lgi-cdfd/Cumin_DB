@@ -57,20 +57,23 @@ npm -v
 
 ---
 
-## Step 2: Transfer CuminDB to Server Directory
+## Step 2: Transfer CuminDB & Reference Genome to Server Directory
 
 ```bash
-# Create target directory on server
+# 1. Create target deployment directory on server
 sudo mkdir -p /var/www/cumindb
 sudo chown -R $USER:$USER /var/www/cumindb
 
-# Extract deployment package into /var/www/cumindb
+# 2. Extract deployment package into /var/www/cumindb
 tar -xzf CuminDB_Deployment_Package.tar.gz -C /var/www/cumindb --strip-components=1
 
-# Change directory
-cd /var/www/cumindb
+# 3. Copy the 1.3 GB Reference Assembly FASTA file & index required for JBrowse 2
+# (Because of its large 1.3 GB size, copy this directly from your workspace directory)
+cp /media/ramesh/LGI/Not-Mine/Cumin_DB/cumin_ncbi_renamed.fsa /var/www/cumindb/
+cp /media/ramesh/LGI/Not-Mine/Cumin_DB/cumin_ncbi_renamed.fsa.fai /var/www/cumindb/
 
-# Install production dependencies
+# 4. Change directory and install dependencies
+cd /var/www/cumindb
 npm install --production
 ```
 
