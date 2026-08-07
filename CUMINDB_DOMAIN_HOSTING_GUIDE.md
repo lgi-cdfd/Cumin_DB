@@ -1,20 +1,20 @@
-# CuminDB Domain Hosting & Deployment Guide (`cumindb.cdfd.org.in`)
+# CuminDB Domain Hosting & Deployment Guide (`https://database.cdfd.org.in/cumindb/`)
 
-This document provides complete instructions and exact shell commands to host CuminDB on **`cumindb.cdfd.org.in`** at CDFD.
+This document provides complete instructions and exact shell commands to host CuminDB on **`https://database.cdfd.org.in/cumindb/`** at CDFD.
 
 ---
 
-## Summary of Files & Settings Modified for `cumindb.cdfd.org.in`
+## Summary of Files & Settings Modified for `database.cdfd.org.in/cumindb/`
 
 1. **`server.js`**:
    - Enabled `app.set('trust proxy', 1);` so Express properly processes reverse proxy headers (`X-Forwarded-For`, `X-Forwarded-Proto`).
 2. **`public/index.html`**:
-   - Added canonical link `<link rel="canonical" href="https://cumindb.cdfd.org.in">`.
-   - Configured OpenGraph social metadata (`og:url` &rarr; `https://cumindb.cdfd.org.in`).
+   - Added canonical link `<link rel="canonical" href="https://database.cdfd.org.in/cumindb/">`.
+   - Configured OpenGraph social metadata (`og:url` &rarr; `https://database.cdfd.org.in/cumindb/`).
 3. **`README.md` & `TUTORIAL.md`**:
-   - Updated production domain URL references to `https://cumindb.cdfd.org.in`.
+   - Updated production domain URL references to `https://database.cdfd.org.in/cumindb/`.
 4. **Nginx Reverse Proxy Config**:
-   - Created `/etc/nginx/sites-available/cumindb.cdfd.org.in`.
+   - Configured location `/cumindb/` in Nginx site config.
 5. **Systemd Service Unit**:
    - Created `/etc/systemd/system/cumindb.service`.
 
@@ -22,7 +22,7 @@ This document provides complete instructions and exact shell commands to host Cu
 
 ## Database & File Audit: Required vs. Non-Required Files for Hosting
 
-### A. REQUIRED Files to Host on Server (`cumindb.cdfd.org.in`):
+### A. REQUIRED Files to Host on Server (`database.cdfd.org.in/cumindb/`):
 1. **`server.js`**: Express backend REST API server.
 2. **`package.json`**: Node.js package dependency manifest.
 3. **`public/`**: Frontend HTML, CSS, JS, images, logos, and JBrowse 2 app files.

@@ -2,7 +2,7 @@
 
 **Target Publication**: *Nature Scientific Data* / *Nucleic Acids Research (Database Issue)*  
 **Portal Name**: CuminDB (*Cuminum cyminum* Genome & Functional Annotation Portal)  
-**Production URL**: [`https://cumindb.cdfd.org.in`](https://cumindb.cdfd.org.in)  
+**Production URL**: [`https://database.cdfd.org.in/cumindb/`](https://database.cdfd.org.in/cumindb/)  
 **Host Institution**: Laboratory of Genome Informatics (LGI), BRIC - Centre for DNA Fingerprinting and Diagnostics (CDFD), Hyderabad, India  
 
 ---
@@ -16,7 +16,7 @@ CuminDB is architected as a high-performance, open-access multi-tier computation
 
 ![Figure 1: CuminDB Webserver System Architecture and Data Workflow Layer Diagram](file:///media/ramesh/LGI/Not-Mine/Cumin_DB/public/images/cumindb_architecture_figure.png)
 
-*Figure 1: High-level publication system architecture of CuminDB illustrating the decoupled three-tier workflow between the Client UI Layer (Web Browser, Interactive Canvas Charts, JBrowse 2 Genome Browser, SequenceServer BLAST Engine), Backend Application Layer (Nginx Reverse Proxy on cumindb.cdfd.org.in, Node.js Express REST API daemon, Systemd process manager, HTTPS security), and Data & Analytics Layer (SQLite 3 relational engine, Tabix GFF3 tracks, and NCBI BLAST+ databases).*
+*Figure 1: High-level publication system architecture of CuminDB illustrating the decoupled three-tier workflow between the Client UI Layer (Web Browser, Interactive Canvas Charts, JBrowse 2 Genome Browser, SequenceServer BLAST Engine), Backend Application Layer (Nginx Reverse Proxy on database.cdfd.org.in/cumindb/, Node.js Express REST API daemon, Systemd process manager, HTTPS security), and Data & Analytics Layer (SQLite 3 relational engine, Tabix GFF3 tracks, and NCBI BLAST+ databases).*
                   +-------------------------------------------------------+
                   |               Client Web Browser                      |
                   |     (HTML5 / Vanilla CSS3 / JS ES6 / Chart.js)        |
@@ -238,7 +238,7 @@ JBrowse 2 (`@jbrowse/react-linear-genome-view` v2.6.1) is integrated into the cl
 
 ## 7. Hosting & Production Deployment Specifications
 
-- **Domain Host**: `cumindb.cdfd.org.in`
+- **Domain Host**: `database.cdfd.org.in/cumindb/`
 - **Reverse Proxy**: Nginx (v1.18.0) configured with `proxy_pass http://127.0.0.1:8005`, HTTP/2 support, WebSocket header forwarding, and `client_max_body_size 100M`.
 - **Process Manager**: Systemd daemon (`/etc/systemd/system/cumindb.service`) with auto-start on boot and 5-second automatic restart resilience.
 - **SSL/TLS Encryption**: TLS v1.3 automated certificate authority provisioning via Let's Encrypt / Certbot.

@@ -23,7 +23,7 @@ Developed and maintained by the **Laboratory of Genome Informatics (LGI)** at th
 
 **Institution**: BRIC - Centre for DNA Fingerprinting and Diagnostics (CDFD), Inner Ring Road, Uppal, Hyderabad, Telangana 500039, India.  
 **Laboratory**: Laboratory of Genome Informatics (LGI)  
-**Official Portal URL**: [`https://cumindb.cdfd.org.in`](https://cumindb.cdfd.org.in)  
+**Official Portal URL**: [`https://database.cdfd.org.in/cumindb/`](https://database.cdfd.org.in/cumindb/)  
 **GitHub Repository**: [`https://github.com/lgi-cdfd/Cumin_DB`](https://github.com/lgi-cdfd/Cumin_DB)
 
 ---
