@@ -14,7 +14,9 @@ CuminDB is architected as a high-performance, open-access multi-tier computation
 2. **Application Server Layer**: A lightweight, asynchronous Node.js (v18.x) RESTful API engine powered by Express.js (v4.19.x) with reverse proxying via Nginx (v1.18.x) and system daemon management via Systemd.
 3. **Client-Side Presentation Layer**: A zero-dependency, ultra-responsive web interface utilizing Vanilla CSS3, modern typography, Chart.js (v4.3.x) dynamic analytics, embedded JBrowse 2 (v2.6.x) linear genome browser, and dynamic SVG BLAST visualizers.
 
-```
+![Figure 1: CuminDB Webserver System Architecture and Data Workflow Layer Diagram](file:///media/ramesh/LGI/Not-Mine/Cumin_DB/public/images/cumindb_architecture_figure.png)
+
+*Figure 1: High-level publication system architecture of CuminDB illustrating the decoupled three-tier workflow between the Client UI Layer (Web Browser, Interactive Canvas Charts, JBrowse 2 Genome Browser, SequenceServer BLAST Engine), Backend Application Layer (Nginx Reverse Proxy on cumindb.cdfd.org.in, Node.js Express REST API daemon, Systemd process manager, HTTPS security), and Data & Analytics Layer (SQLite 3 relational engine, Tabix GFF3 tracks, and NCBI BLAST+ databases).*
                   +-------------------------------------------------------+
                   |               Client Web Browser                      |
                   |     (HTML5 / Vanilla CSS3 / JS ES6 / Chart.js)        |
