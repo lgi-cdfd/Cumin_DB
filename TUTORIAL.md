@@ -87,7 +87,7 @@ Navigate to **Annotation &rarr; Functional Annotation** on the main navigation b
 Navigate to **Annotation &rarr; Secondary Metabolism** to mine 294 secondary metabolite pathway genes essential for cumin essential oils, aroma, and stress defense:
 
 ### Categories
-- **Terpenoids**: Essential oil terpenes (cuminaldehyde, $\alpha$-pinene, $\beta$-pinene, terpene synthases).
+- **Terpenoids**: Essential oil terpenes (cuminaldehyde, α-pinene, β-pinene, terpene synthases).
 - **Phenylpropanoids**: Lignin and flavonoid precursors.
 - **Alkaloids & Polyketides**: Secondary defense metabolites.
 
@@ -99,16 +99,16 @@ Navigate to **Annotation &rarr; Secondary Metabolism** to mine 294 secondary met
 
 ## 4. Mining SSR Microsatellites & PCR Primers
 
-Navigate to **SSR** to search 213,248 SSR loci mined across the assembly using MISA and Primer3:
+Navigate to **SSR** to search 294,013 SSR loci mined across the assembly using Krait and Primer3:
 
 ### Search & Filtering
 - **SSR Type**: Filter by repeat unit motif length (`Mononucleotide`, `Dinucleotide`, `Trinucleotide`, `Tetranucleotide`, `Pentanucleotide`, `Hexanucleotide`, or `Compound`).
 - **Motif Query**: Search for specific repeat sequence motifs (e.g., `GA`, `CTT`).
-- **Gene Locus Mapping**: Mined markers are tagged as **Intragenic** (hyperlinked to the intersecting `CcGene` model) or **Intergenic**.
+- **Gene Locus Mapping**: Mined markers are tagged as **Genic** (`Coding (CDS)`, `Non-coding (Intron)`, `Non-coding (Exon/UTR)` hyperlinked to `CcGene`) or **Intergenic**.
 
 ### Primer Parameters
-- **Forward & Reverse Primer Sequences**: ($5' \rightarrow 3'$) sequence strings.
-- **Melting Temperatures ($T_m$)**: Calculated melting temperatures in $^\circ\text{C}$.
+- **Forward & Reverse Primer Sequences**: (5' → 3') sequence strings.
+- **Melting Temperatures (T<sub>m</sub>)**: Calculated melting temperatures in °C.
 - **Amplicon Size**: Expected PCR product length in base pairs (bp).
 - **One-Click Copy**: Click the **Copy** button alongside any primer sequence to instantly copy it to your system clipboard.
 
