@@ -20,6 +20,24 @@ This document provides complete instructions and exact shell commands to host Cu
 
 ---
 
+## Database & File Audit: Required vs. Non-Required Files for Hosting
+
+### A. REQUIRED Files to Host on Server (`cumindb.cdfd.org.in`):
+1. **`server.js`**: Express backend REST API server.
+2. **`package.json`**: Node.js package dependency manifest.
+3. **`public/`**: Frontend HTML, CSS, JS, images, logos, and JBrowse 2 app files.
+4. **`id_mapping.tsv`**: Gene model and scaffold ID conversion table.
+5. **`db/cumin_database.sqlite`**: **Master relational database (239 MB) containing ALL 33,595 genes, 294,013 SSRs, 1,248 TFs, 887,912 miRNA targets, and 294 secondary metabolite pathways**.
+6. **`db/*.gff.gz` & `db/*.gff.gz.tbi`**: Tabix-indexed annotation tracks for JBrowse 2.
+7. **`db/cumin_cds.*` & `db/cumin_proteins.*`**: NCBI BLAST+ database indexes for Web BLAST.
+
+### B. NOT REQUIRED on Hosting Server (Safe to Exclude / Delete):
+1. **`db/parsed_mirna_targets.json` (402 MB)** & **`db/parsed_genes.json` (20 MB)**: Intermediate JSON dumps produced during building. The Express server queries `cumin_database.sqlite` directly.
+2. **Raw Input Files**: `psRNATargetJob-*.txt`, `krait-ssr`, `krait-ssr-primers`, `generic_export.txt`, `cumin_refined_genes_clean.gff3`.
+3. **Mining Scripts (`scripts/*.py`)**: Pipeline build scripts (only needed if rebuilding from raw sources).
+
+---
+
 ## Step 1: Server Prerequisites & Setup
 
 Run these commands on your production server:
